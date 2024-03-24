@@ -1,16 +1,19 @@
-import { Color } from "../primitives";
-
+import { Color, Point } from "../primitives";
+import type { ApplicationProgram } from "../../application";
 export abstract class Drawable {
-  constructor(public color: Color) {}
-  abstract draw(
-    gl: WebGLRenderingContext,
-    colorUniformLocation: WebGLUniformLocation | null
-  ): void;
+  public rotationPoint: Point = { x: 0, y: 0 };
+  public rotationFactor: Point = { x: 0, y: 0 };
 
-  prepareColor(
-    gl: WebGLRenderingContext,
-    colorUniformLocation: WebGLUniformLocation | null
-  ) {
-    gl.uniform4f(colorUniformLocation, ...this.color, 1);
+  constructor(public color: Color, protected program: ApplicationProgram) {}
+  abstract draw(): void;
+
+  abstract getRotationPoint(): Point;
+
+  prepare() {
+    this.program.setUniforms({
+      color: [...this.color, 1],
+      rotationPoint: [this.rotationPoint.x, this.rotationPoint.y],
+      rotationFactor: [this.rotationFactor.x, this.rotationFactor.y],
+    });
   }
 }

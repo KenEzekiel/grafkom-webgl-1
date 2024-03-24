@@ -11,7 +11,7 @@ void main() {
   vec2 position = a_position - u_rotationPoint;
 
   // rotate
-  vec2 rotatedPosition = vec2(toRotationPoint.x * u_rotation.y + toRotationPoint.y * u_rotation.x, toRotationPoint.y * u_rotation.y - toRotationPoint.x * u_rotation.x);
+  vec2 rotatedPosition = vec2(position.x * u_rotation.y + position.y * u_rotation.x, position.y * u_rotation.y - position.x * u_rotation.x);
 
   position = rotatedPosition + u_rotationPoint;
 

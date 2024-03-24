@@ -3,6 +3,8 @@ import { Program } from "./lib/program";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
 import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
 
+export type ApplicationProgram = Application["program"];
+
 export class Application {
   private gl;
   private program;
@@ -31,6 +33,12 @@ export class Application {
         color: {
           type: "uniform4f",
         },
+        rotationPoint: {
+          type: "uniform2f",
+        },
+        rotationFactor: {
+          type: "uniform2f",
+        },
       },
     });
   }
@@ -40,7 +48,7 @@ export class Application {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
     this.objects.forEach((obj) => {
-      obj.draw(this.gl, this.program.u.color.location);
+      obj.draw();
     });
   }
 }

@@ -7,7 +7,6 @@ import "./style.css";
 
 function main() {
   // Setup toolbar
-  new Slider("myRange", (number) => console.log(number));
   const toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
   // Setup canvas on html
   const canvasContainer =
@@ -69,6 +68,12 @@ function main() {
     gl.deleteProgram(program);
   }
 
+  let multiplier = 1;
+  new Slider("myRange", (number) => {
+    multiplier = 1 + number / 100;
+    drawLines(gl, points, multiplier);
+  });
+
   // Create the program, and set the locations of attributes
   const program = createProgram(gl, vertexShader, fragmentShader)!;
   const positionAttributeLocation = gl.getAttribLocation(program, "a_position");
@@ -85,7 +90,7 @@ function main() {
   // Create viewport
   gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-  // Use the program with the attribute array and uniform 
+  // Use the program with the attribute array and uniform
   gl.useProgram(program);
   gl.enableVertexAttribArray(positionAttributeLocation);
   gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
@@ -115,49 +120,50 @@ function main() {
   //     rectangles.shift();
   //   }
   // }, 200);
-  let pos: { x: any; y: any; }, clicked = false;
+  let pos: { x: any; y: any },
+    clicked = false;
   canvas.addEventListener("click", (e) => {
-    let {x, y} = getMousePosition(canvas, e);
+    let { x, y } = getMousePosition(canvas, e);
     if (clicked) {
-      points.push([pos.x,canvas.height - pos.y, x, canvas.height - y])
+      points.push([pos.x, canvas.height - pos.y, x, canvas.height - y]);
       clicked = true;
     }
     pos = getMousePosition(canvas, e);
     clicked = true;
     rectangles.push([
-          x,
-          canvas.height - y,
-          randomRange(10, 100),
-          randomRange(10, 100),
-          Math.random(),
-          Math.random(),
-          Math.random(),
-        ]);
+      x,
+      canvas.height - y,
+      randomRange(10, 100),
+      randomRange(10, 100),
+      Math.random(),
+      Math.random(),
+      Math.random(),
+    ]);
     draw(gl, rectangles, colorUniformLocation);
     drawLines(gl, points);
-    
+
     if (rectangles.length > 100) {
       rectangles.shift();
     }
-    
-  })
-
-  
+  });
 
   canvas.addEventListener("mousemove", (e) => {
-    let {x, y} = getMousePosition(canvas, e);
+    let { x, y } = getMousePosition(canvas, e);
 
     if (points.length == 0) {
-      points.push([pos.x,canvas.height - pos.y, x, canvas.height - y])
+      points.push([pos.x, canvas.height - pos.y, x, canvas.height - y]);
     } else {
-      points[points.length - 1] = [pos.x,canvas.height - pos.y, x, canvas.height - y]
+      points[points.length - 1] = [
+        pos.x,
+        canvas.height - pos.y,
+        x,
+        canvas.height - y,
+      ];
     }
-    
 
-    draw(gl, rectangles, colorUniformLocation)
+    draw(gl, rectangles, colorUniformLocation);
     drawLines(gl, points);
-    
-  })
+  });
 }
 
 function getMousePosition(canvas: HTMLCanvasElement, event: MouseEvent) {
@@ -166,8 +172,6 @@ function getMousePosition(canvas: HTMLCanvasElement, event: MouseEvent) {
   let y = event.clientY - rect.top;
   return { x, y };
 }
-
-
 
 function randomRange(min: number, max: number) {
   return Math.random() * (max - min) + min;
@@ -214,11 +218,20 @@ function draw(
 
 function drawLine(
   gl: WebGLRenderingContext,
-  points: [number, number, number, number]
+  points: [number, number, number, number],
+  multiplier?: number
 ) {
+  const transformedPoints = points.map((point) =>
+    multiplier ? point * multiplier : point
+  );
   gl.bufferData(
     gl.ARRAY_BUFFER,
-    new Float32Array([points[0], points[1], points[2], points[3]]),
+    new Float32Array([
+      transformedPoints[0],
+      transformedPoints[1],
+      transformedPoints[2],
+      transformedPoints[3],
+    ]),
     gl.STATIC_DRAW
   );
   gl.drawArrays(gl.LINES, 0, 2);
@@ -227,9 +240,10 @@ function drawLine(
 function drawLines(
   gl: WebGLRenderingContext,
   lines: Array<[number, number, number, number]>,
+  multiplier?: number
 ) {
   lines.forEach((line) => {
-    drawLine(gl, line);
+    drawLine(gl, line, multiplier);
   });
 }
 
