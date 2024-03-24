@@ -131,4 +131,20 @@ export class Program<
     this.gl.deleteShader(shader);
     throw new Error("Failed to create shader");
   }
+
+  public setUniforms(uniforms: {
+    [K in keyof TUniforms]?: any[];
+  }) {
+    Object.entries(uniforms).forEach(([item, args]) => {
+      if (!args) {
+        return;
+      }
+      const uniform = this.uniforms[item];
+      if (!uniform) {
+        return;
+      }
+
+      (this.gl[uniform.type] as any)(uniform.location, ...args);
+    });
+  }
 }
