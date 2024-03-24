@@ -51,8 +51,8 @@ export class Application {
     this.objects.push(
       new Line(
         [
-          { x: 10, y: 20 },
-          { x: 10, y: 40 },
+          { x: 10, y: 350 },
+          { x: 10, y: 400 },
         ],
         [1, 1, 1],
         this.program
@@ -65,6 +65,8 @@ export class Application {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.program.a.position.buffer);
     this.objects.forEach((obj) => {
+      obj.scale = 3;
+      obj.setRotation(90);
       obj.draw();
     });
   }
