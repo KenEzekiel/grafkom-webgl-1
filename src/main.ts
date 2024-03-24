@@ -1,3 +1,4 @@
+import { Slider } from "./lib/slider";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
 import vectorShaderSource from "./shaders/vector-shader-2d.glsl";
@@ -5,6 +6,7 @@ import vectorShaderSource from "./shaders/vector-shader-2d.glsl";
 import "./style.css";
 
 function main() {
+  new Slider("myRange", (number) => console.log(number));
   const toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
   const canvasContainer =
     document.querySelector<HTMLDivElement>(".canvas-container")!;
