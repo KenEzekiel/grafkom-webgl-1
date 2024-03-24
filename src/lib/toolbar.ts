@@ -54,7 +54,7 @@ export class Toolbars<T extends string> {
   }
 
   private onActive(name: T) {
-    if (this.activeToolbar) {
+    if (this.activeToolbar && this.activeToolbar !== name) {
       this.items[this.activeToolbar].toggle(false);
     }
     this.activeToolbar = name;
