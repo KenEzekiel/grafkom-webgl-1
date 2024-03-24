@@ -3,7 +3,7 @@ attribute vec2 a_position;
 
 uniform vec2 u_rotation;
 uniform vec2 u_rotationPoint;
-uniform vec2 u_scale;
+uniform float u_scale;
 uniform vec2 u_resolution;
 
 // all shaders have a main function

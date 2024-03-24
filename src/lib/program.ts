@@ -135,6 +135,7 @@ export class Program<
   public setUniforms(uniforms: {
     [K in keyof TUniforms]?: any[];
   }) {
+    console.log(uniforms);
     Object.entries(uniforms).forEach(([item, args]) => {
       if (!args) {
         return;
@@ -143,7 +144,6 @@ export class Program<
       if (!uniform) {
         return;
       }
-
       (this.gl[uniform.type] as any)(uniform.location, ...args);
     });
   }

@@ -6,15 +6,15 @@ export class Line extends Drawable {
   constructor(
     public points: [Point, Point],
     color: Color,
-    application: ApplicationProgram
+    program: ApplicationProgram
   ) {
-    super(color, application);
+    super(color, program);
   }
 
   getRotationPoint(): Point {
     return {
-      x: this.points[0].x + (this.points[1].x - this.points[0].x) / 2,
-      y: this.points[0].y + (this.points[0].y - this.points[0].y) / 2,
+      x: (this.points[0].x + this.points[1].x) / 2,
+      y: (this.points[0].y + this.points[1].y) / 2,
     };
   }
 

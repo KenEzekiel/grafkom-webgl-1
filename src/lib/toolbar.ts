@@ -1,3 +1,5 @@
+import { enableChangeToolbar } from "./variables";
+
 const toolbarContainer = document.querySelector(".toolbars")!;
 
 class Toolbar<T extends string> {
@@ -8,6 +10,9 @@ class Toolbar<T extends string> {
   constructor(public name: T) {
     this.button = toolbarContainer.querySelector("." + name)!;
     this.button.addEventListener("click", () => {
+      if (!enableChangeToolbar) {
+        return;
+      }
       this.toggle(true);
       if (this.onActive && this.active) {
         this.onActive();
