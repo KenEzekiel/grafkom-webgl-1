@@ -39,6 +39,9 @@ export class Application {
         rotationFactor: {
           type: "uniform2f",
         },
+        scale: {
+          type: "uniform1f",
+        },
       },
     });
   }

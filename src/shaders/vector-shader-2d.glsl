@@ -3,12 +3,13 @@ attribute vec2 a_position;
 
 uniform vec2 u_rotation;
 uniform vec2 u_rotationPoint;
+uniform vec2 u_scale;
 uniform vec2 u_resolution;
 
 // all shaders have a main function
 void main() {
   // to rotation point
-  vec2 position = a_position - u_rotationPoint;
+  vec2 position = a_position * u_scale - u_rotationPoint;
 
   // rotate
   vec2 rotatedPosition = vec2(position.x * u_rotation.y + position.y * u_rotation.x, position.y * u_rotation.y - position.x * u_rotation.x);
