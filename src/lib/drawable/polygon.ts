@@ -14,6 +14,22 @@ export class Polygon extends Drawable {
     throw new Error("Method not implemented.");
   }
 
+  deletePoint(index: number) {
+    if (index > this.points.length - 1) {
+      throw new Error("Out of bound!");
+    }
+
+    this.points.splice(index, 1);
+  }
+
+  addPoint(index: number, point: Point) {
+    if (index > this.points.length - 1) {
+      throw new Error("Out of bound!");
+    }
+
+    this.points.splice(index, 0, point);
+  }
+
   draw(): void {
     const localPoint: Array<number> = [];
     this.points.forEach((point) => {
