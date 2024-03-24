@@ -1,9 +1,11 @@
+import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
 import vectorShaderSource from "./shaders/vector-shader-2d.glsl";
 
 import "./style.css";
 
 function main() {
+  const toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
   const canvasContainer =
     document.querySelector<HTMLDivElement>(".canvas-container")!;
   const canvas = document.querySelector<HTMLCanvasElement>("#main-canvas")!;
