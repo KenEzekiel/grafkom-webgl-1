@@ -118,7 +118,10 @@ function main() {
   let pos: { x: any; y: any; }, clicked = false;
   canvas.addEventListener("click", (e) => {
     let {x, y} = getMousePosition(canvas, e);
-    
+    if (clicked) {
+      points.push([pos.x,canvas.height - pos.y, x, canvas.height - y])
+      clicked = true;
+    }
     pos = getMousePosition(canvas, e);
     clicked = true;
     rectangles.push([
@@ -130,13 +133,12 @@ function main() {
           Math.random(),
           Math.random(),
         ]);
-    drawLines(gl, points);
     draw(gl, rectangles, colorUniformLocation);
+    drawLines(gl, points);
     
     if (rectangles.length > 100) {
       rectangles.shift();
     }
-    
     
   })
 
@@ -145,9 +147,15 @@ function main() {
   canvas.addEventListener("mousemove", (e) => {
     let {x, y} = getMousePosition(canvas, e);
 
-    drawLines(gl, points);
+    if (points.length == 0) {
+      points.push([pos.x,canvas.height - pos.y, x, canvas.height - y])
+    } else {
+      points[points.length - 1] = [pos.x,canvas.height - pos.y, x, canvas.height - y]
+    }
+    
+
     draw(gl, rectangles, colorUniformLocation)
-    drawLine(gl, [pos.x,canvas.height - pos.y, x, canvas.height - y])
+    drawLines(gl, points);
     
   })
 }
@@ -220,15 +228,8 @@ function drawLines(
   gl: WebGLRenderingContext,
   lines: Array<[number, number, number, number]>,
 ) {
-  gl.clearColor(0, 0, 0, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
   lines.forEach((line) => {
-    gl.bufferData(
-      gl.ARRAY_BUFFER,
-      new Float32Array([line[0], line[1], line[2], line[3]]),
-      gl.STATIC_DRAW
-    );
-    gl.drawArrays(gl.LINES, 0, 2);
+    drawLine(gl, line);
   });
 }
 
