@@ -4,7 +4,7 @@ import { Drawable } from "./base";
 
 export class Triangle extends Drawable {
     
-  constructor(public points: [Point, Point, Point], public width: number, public height: number, color: Color, application: ApplicationProgram) {
+  constructor(public points: [Point, Point, Point], color: Color, application: ApplicationProgram) {
     super(color, application);
   }
   getRotationPoint(): Point {
@@ -19,19 +19,6 @@ export class Triangle extends Drawable {
     );  
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 3);
-  }
-
-   calculateRectangle(
-    x: number,
-    y: number,
-    width: number,
-    height: number
-  ) {
-    var x1 = x;
-    var x2 = x + width;
-    var y1 = y;
-    var y2 = y + height;
-    return [x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]
   }
 }
 
