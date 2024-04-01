@@ -21,6 +21,7 @@ export class ColorPicker {
   setColor(color: Color) {
     this.color = this.rgbToHex(color[0], color[1], color[2]);
     this.colorpicker.value = this.color;
+    console.log(this.color);
   }
 
   private componentToHex(c: number) {
@@ -47,6 +48,6 @@ export class ColorPicker {
   }
 
   public getColor(): Color {
-    return this.hexToRgb();
+    return JSON.parse(JSON.stringify(this.hexToRgb()));
   }
 }

@@ -26,7 +26,7 @@ export abstract class Drawable {
   prepare() {
     const rotationPoint = this.getRotationPoint();
     this.program.setUniforms({
-      color: [...this.color, 1],
+      color: [...this.color.map((num) => num / 255), 1],
       rotationPoint: [rotationPoint.x, rotationPoint.y],
       rotation: this.rotation,
       scale: [this.scale],

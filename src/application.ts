@@ -1,3 +1,4 @@
+import { ColorPicker } from "./lib/colorpicker";
 import { Drawable } from "./lib/drawable/base";
 import { Line } from "./lib/drawable/line";
 import { Rectangle } from "./lib/drawable/rectangle";
@@ -22,6 +23,7 @@ export class Application {
     "select-shape",
   ]);
   private selectedToolbar: undefined | string = undefined;
+  private colorpicker = new ColorPicker("colorpicker");
 
   constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -86,6 +88,8 @@ export class Application {
         return;
       }
 
+      console.log(this.colorpicker.getColor());
+
       if (this.selectedToolbar === "line") {
         // Put one point of the line the mouse position
         const { x, y } = this.getMousePosition(e);
@@ -95,7 +99,7 @@ export class Application {
               { x, y },
               { x, y },
             ],
-            [255, 255, 255],
+            this.colorpicker.getColor(),
             this.program
           )
         );
@@ -103,13 +107,25 @@ export class Application {
 
       if (this.selectedToolbar === "square") {
         this.objects.push(
-          new Rectangle(position, 0, 0, [255, 255, 255], this.program)
+          new Rectangle(
+            position,
+            0,
+            0,
+            this.colorpicker.getColor(),
+            this.program
+          )
         );
       }
 
       if (this.selectedToolbar === "rectangle") {
         this.objects.push(
-          new Rectangle(position, 0, 0, [255, 255, 255], this.program)
+          new Rectangle(
+            position,
+            0,
+            0,
+            this.colorpicker.getColor(),
+            this.program
+          )
         );
       }
 
