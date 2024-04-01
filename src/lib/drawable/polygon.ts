@@ -68,6 +68,19 @@ export class Polygon extends Drawable {
     this.updateLocalPoints();
   }
 
+  translate({ x, y }: Point): void {
+    for (let i = 0; i < this.points.length; i++) {
+      this.points[i].x += x;
+      this.points[i].y += y;
+    }
+
+    if (this.pointsCache) {
+      this.pointsCache = this._getPoints();
+    }
+
+    this.updateLocalPoints();
+  }
+
   addPoint(point: Point) {
     this.points.push(point);
     this.updateLocalPoints();

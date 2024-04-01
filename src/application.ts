@@ -24,7 +24,7 @@ export class Application {
     "rectangle",
     "polygon",
     "select-shape",
-    "delete",
+    "erase",
   ]);
   public colorPicker = new ColorPicker("color-picker");
   private fileInput = new FileInput("model-input");
@@ -99,17 +99,6 @@ export class Application {
     });
 
     canvas.addEventListener("click", (e) => {
-      // Logic for selecting a shape
-      const position = this.getMousePosition(e);
-      if (this.toolbars.activeToolbar === "delete") {
-        const { index } = this.getFirstSelected(position);
-        if (index === -1) {
-          return;
-        }
-
-        this.objects.splice(index, 1);
-      }
-
       this.state.onClick(this.getMousePosition(e));
     });
 
@@ -179,5 +168,15 @@ export class Application {
     document
       .querySelector("#slider-container")!
       .classList.toggle("flex", visible);
+  }
+
+  public getCanvasSize() {
+    const rect = document
+      .getElementById("main-canvas")!
+      .getBoundingClientRect();
+    return {
+      width: rect.width,
+      height: rect.height,
+    };
   }
 }

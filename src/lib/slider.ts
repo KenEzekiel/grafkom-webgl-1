@@ -34,6 +34,14 @@ export class Slider {
     return this.slider.value;
   }
 
+  getRange() {
+    return this.maximum - this.minimum;
+  }
+
+  getRelativeValue() {
+    return Number(this.slider.value) / (this.maximum - this.minimum);
+  }
+
   setValue(value: number) {
     this.slider.value = String(
       Math.max(Math.min(value, this.maximum), this.minimum)

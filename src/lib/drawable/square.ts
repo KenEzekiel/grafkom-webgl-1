@@ -39,6 +39,11 @@ export class Square extends Drawable {
     };
   }
 
+  translate({ x, y }: Point): void {
+    this.points.x += x;
+    this.points.y += y;
+  }
+
   draw(): void {
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,

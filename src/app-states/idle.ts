@@ -5,6 +5,7 @@ import { Rectangle } from "../lib/drawable/rectangle";
 import { Point } from "../lib/primitives";
 import { BaseAppState } from "./base";
 import { DrawingState } from "./drawing";
+import { EraseState } from "./erase";
 import { SelectShapeState } from "./select-shape";
 
 export class IdleState extends BaseAppState {
@@ -24,6 +25,9 @@ export class IdleState extends BaseAppState {
     }
 
     switch (this.app.toolbars.activeToolbar) {
+      case "erase":
+        this.app.changeState(new EraseState(this.app));
+        break;
       case "line":
         const { x, y } = point;
         this.app.changeState(

@@ -25,6 +25,16 @@ export class Line extends Drawable {
     };
   }
 
+  translate({ x, y }: Point): void {
+    this.points[0].x += x;
+    this.points[0].y += y;
+    this.points[1].x += x;
+    this.points[1].y += y;
+    if (this.pointsCache) {
+      this.pointsCache = this._getPoints();
+    }
+  }
+
   isSelected(mousePosition: Point): boolean {
     const dx = this.points[0].x - this.points[1].x;
     const dy = this.points[0].y - this.points[1].y;

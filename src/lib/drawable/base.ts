@@ -1,11 +1,11 @@
 import type { ApplicationProgram } from "../../application";
-import { Color, Point, Vec2 } from "../primitives";
+import { Color, Point, Size, Vec2 } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   protected rotationDegree: number = 0;
 
   public scale: number = 1;
-  private pointsCache: Point[] | undefined;
+  protected pointsCache: Point[] | undefined;
 
   constructor(public color: Color, protected program: ApplicationProgram) {}
   abstract draw(): void;
@@ -13,6 +13,8 @@ export abstract class Drawable {
   abstract getRotationPoint(): Point;
 
   abstract isSelected(mousePosition: Point): boolean;
+
+  abstract translate(translation: Point): void;
 
   protected abstract _getPoints(): Point[];
 
@@ -33,6 +35,14 @@ export abstract class Drawable {
       Math.sin((degree * 2 * Math.PI) / 360),
       Math.cos((degree * 2 * Math.PI) / 360),
     ];
+  }
+
+  getRelativePosition(canvasSize: Size): Point {
+    const centralPoint = this.getRotationPoint();
+    return {
+      x: centralPoint.x / canvasSize.width,
+      y: centralPoint.y / canvasSize.height,
+    };
   }
 
   getRotation() {

@@ -38,6 +38,14 @@ export class Rectangle extends Drawable {
     this.width = newHeight;
   }
 
+  translate({ x, y }: Point): void {
+    this.point.x += x;
+    this.point.y += y;
+    if (this.pointsCache) {
+      this.pointsCache = this._getPoints();
+    }
+  }
+
   draw(): void {
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,

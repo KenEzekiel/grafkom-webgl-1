@@ -18,11 +18,30 @@ export class SelectShapeState extends BaseAppState {
     app.manageSliderVisibility(true);
     this.selectObj = this.app.objects[this.selectIdx];
     this.app.colorPicker.setColor(this.selectObj.color);
-
-    this.rotationSlider.setValue(this.selectObj.getRotationDegree());
+    this.updateSlider();
 
     this.rotationSlider.onValueChange((value) => {
       this.selectObj.setRotation(value);
+      this.app.draw();
+    });
+
+    this.horizontalSlider.onValueChange(() => {
+      const canvasSize = this.app.getCanvasSize();
+      const relativePosition = this.selectObj.getRelativePosition(canvasSize);
+      const newX =
+        (this.horizontalSlider.getRelativeValue() - relativePosition.x) *
+        canvasSize.width;
+      this.selectObj.translate({ x: newX, y: 0 });
+      this.app.draw();
+    });
+
+    this.verticalSlider.onValueChange(() => {
+      const canvasSize = this.app.getCanvasSize();
+      const relativePosition = this.selectObj.getRelativePosition(canvasSize);
+      const newY =
+        (this.verticalSlider.getRelativeValue() - relativePosition.y) *
+        canvasSize.height;
+      this.selectObj.translate({ x: 0, y: newY });
       this.app.draw();
     });
   }
@@ -30,6 +49,8 @@ export class SelectShapeState extends BaseAppState {
   onBeforeChange(): void {
     this.app.manageSliderVisibility(false);
     this.rotationSlider.cleanup();
+    this.horizontalSlider.cleanup();
+    this.verticalSlider.cleanup();
   }
 
   onColorPickerChange(color: Color) {
@@ -54,7 +75,7 @@ export class SelectShapeState extends BaseAppState {
       if (selected) {
         this.selectObj = selected;
         if (index !== this.selectIdx) {
-          this.rotationSlider.setValue(this.selectObj.getRotationDegree());
+          this.updateSlider();
         }
 
         this.selectIdx = index;
@@ -69,5 +90,19 @@ export class SelectShapeState extends BaseAppState {
     if (selected) {
       this.selectedPoint = selected;
     }
+  }
+
+  updateSlider() {
+    const relativePosition = this.selectObj.getRelativePosition(
+      this.app.getCanvasSize()
+    );
+
+    this.rotationSlider.setValue(this.selectObj.getRotationDegree());
+    this.horizontalSlider.setValue(
+      relativePosition.x * this.horizontalSlider.getRange()
+    );
+    this.verticalSlider.setValue(
+      relativePosition.y * this.verticalSlider.getRange()
+    );
   }
 }
