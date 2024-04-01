@@ -11,6 +11,8 @@ export class Line extends Drawable {
     super(color, program);
   }
 
+  public proximityThickness = 5;
+
   getRotationPoint(): Point {
     return {
       x: (this.points[0].x + this.points[1].x) / 2,
@@ -19,7 +21,16 @@ export class Line extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    return false;
+    const dx = this.points[0].x - this.points[1].x;
+    const dy = this.points[0].y - this.points[1].y;
+
+    const dxo = this.points[0].x - mousePosition.x;
+    const dyo = this.points[0].y - mousePosition.y;
+
+    const distance =
+      Math.abs(dx * dyo - dy * dxo) / Math.sqrt(dx ** 2 + dy ** 2);
+
+    return distance <= this.proximityThickness;
   }
 
   draw(): void {

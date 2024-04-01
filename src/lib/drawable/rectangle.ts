@@ -46,7 +46,13 @@ export class Rectangle extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    return false;
+    const { x: mouseX, y: mouseY } = mousePosition;
+    const withinX =
+      mouseX >= this.point.x && mouseX <= this.point.x + this.width;
+    const withinY =
+      mouseY >= this.point.y && mouseY <= this.point.y + this.height;
+
+    return withinX && withinY;
   }
 
   calculateRectangle(x: number, y: number, width: number, height: number) {

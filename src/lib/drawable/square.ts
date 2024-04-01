@@ -13,7 +13,13 @@ export class Square extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    return false;
+    const { x: mouseX, y: mouseY } = mousePosition;
+    const withinX =
+      mouseX >= this.points.x && mouseX <= this.points.x + this.length;
+    const withinY =
+      mouseY >= this.points.y && mouseY <= this.points.y + this.length;
+
+    return withinX && withinY;
   }
 
   getRotationPoint(): Point {
