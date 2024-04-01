@@ -14,7 +14,7 @@ export class Application {
   private program;
   private objects: Array<Drawable> = [];
   private toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
-  private selectedShape: undefined | string = undefined;
+  private selectedToolbar: undefined | string = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -60,45 +60,45 @@ export class Application {
         this.draw();
       }
 
-      this.selectedShape = name;
+      this.selectedToolbar = name;
     });
 
     canvas.addEventListener("click", (e) => {
       // Logic for selecting a shape
-      if (this.selectedShape === "select") {
-        const position = this.getMousePosition(e);
+      const position = this.getMousePosition(e);
+      if (this.selectedToolbar === "select") {
+        return;
       }
 
       if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
         this.getLastObject()?.finalize();
         return;
       }
-      if (this.selectedShape === "line") {
-        const point = this.getMousePosition(e);
+      if (this.selectedToolbar === "line") {
         // Put one point of the line the mouse position
         this.objects.push(
-          new Line([point, point], [255, 255, 255], this.program)
-        );
-      }
-
-      if (this.selectedShape === "square") {
-        const point = this.getMousePosition(e);
-        this.objects.push(
-          new Rectangle(point, 0, 0, [255, 255, 255], this.program)
+          new Line([position, position], [255, 255, 255], this.program)
         );
         return;
       }
 
-      if (this.selectedShape === "rectangle") {
-        const point = this.getMousePosition(e);
+      if (this.selectedToolbar === "square") {
         this.objects.push(
-          new Rectangle(point, 0, 0, [255, 255, 255], this.program)
+          new Rectangle(position, 0, 0, [255, 255, 255], this.program)
         );
+        return;
+      }
+
+      if (this.selectedToolbar === "rectangle") {
+        this.objects.push(
+          new Rectangle(position, 0, 0, [255, 255, 255], this.program)
+        );
+        return;
       }
     });
 
     canvas.addEventListener("mousemove", (e) => {
-      if (!this.selectedShape) {
+      if (!this.selectedToolbar) {
         return;
       }
 
@@ -107,7 +107,6 @@ export class Application {
       }
 
       const { x, y } = this.getMousePosition(e);
-      // console.log(x, y);
 
       // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
       const lastObject = this.getLastObject();
@@ -123,7 +122,10 @@ export class Application {
         lastObject.points[1].y = y;
       }
 
-      if (lastObject instanceof Rectangle && this.selectedShape === "square") {
+      if (
+        lastObject instanceof Rectangle &&
+        this.selectedToolbar === "square"
+      ) {
         let dx = lastObject.point.x;
         let dy = lastObject.point.y;
         // console.log(cornerX, cornerY);
@@ -140,7 +142,7 @@ export class Application {
 
       if (
         lastObject instanceof Rectangle &&
-        this.selectedShape === "rectangle"
+        this.selectedToolbar === "rectangle"
       ) {
         let dx = lastObject.point.x;
         let dy = lastObject.point.y;
