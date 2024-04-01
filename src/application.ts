@@ -52,12 +52,13 @@ export class Application {
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
     this.objects.push(
-      new Square({ x: 0, y: 0 }, 100, [255, 255, 255], this.program)
+      new Square({ x: 100, y: 100 }, 100, [255, 255, 255], this.program)
     );
+    this.draw();
 
     this.toolbars.setOnActive((name: string) => {
       // If the toolbar is changed in the middle of drawing a shape, remove the unfinished shape
-      if (this.getLastObject() && this.getLastObject()?.finishDrawn) {
+      if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
         this.objects.pop();
         this.draw();
       }
@@ -115,25 +116,29 @@ export class Application {
       // console.log(x, y);
 
       // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
-      var lastObject = this.getLastObject();
+      const lastObject = this.getLastObject();
 
       if (!lastObject) {
         return;
       }
+
       this.objects.pop();
 
-      // If the last object is line
       if (lastObject instanceof Line) {
         lastObject.points[1].x = x;
         lastObject.points[1].y = y;
       }
 
-      if (this.selectedShape === "square") {
-        const square = this.getLastObject() as Square;
-        const { x: cornerX, y: cornerY } = square.points;
-        const lengthY = Math.abs(cornerY - y);
-        const lengthX = Math.abs(cornerX - x);
-        square.length = Math.min(lengthX, lengthY);
+      if (lastObject instanceof Square) {
+        const { x: cornerX, y: cornerY } = lastObject.points;
+        const lengthY = cornerY - y;
+        const lengthX = cornerX - x;
+        const resultingLength =
+          Math.min(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
+            ? lengthY
+            : lengthX;
+
+        lastObject.length = resultingLength;
       }
 
       if (lastObject instanceof Rectangle) {
