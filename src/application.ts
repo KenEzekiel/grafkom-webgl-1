@@ -1,5 +1,6 @@
 import { Drawable } from "./lib/drawable/base";
 import { Line } from "./lib/drawable/line";
+import { Rectangle } from "./lib/drawable/rectangle";
 import { Square } from "./lib/drawable/square";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
@@ -92,6 +93,13 @@ export class Application {
         console.log("Nyampe");
         return;
       }
+
+      if (this.selectedShape === "rectangle") {
+        const point = this.getMousePosition(e);
+        this.objects.push(
+          new Rectangle(point, 0, 0, [255, 255, 255], this.program)
+        );
+      }
     });
 
     canvas.addEventListener("mousemove", (e) => {
@@ -108,13 +116,16 @@ export class Application {
 
       // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
       var lastObject = this.getLastObject();
+
+      if (!lastObject) {
+        return;
+      }
       this.objects.pop();
 
       // If the last object is line
       if (lastObject instanceof Line) {
         lastObject.points[1].x = x;
         lastObject.points[1].y = y;
-        this.objects.push(lastObject);
       }
 
       if (this.selectedShape === "square") {
@@ -125,7 +136,19 @@ export class Application {
         square.length = Math.min(lengthX, lengthY);
       }
 
+      if (lastObject instanceof Rectangle) {
+        let dx = lastObject.point.x;
+        let dy = lastObject.point.y;
+
+        let width = x - dx;
+        let height = y - dy;
+
+        lastObject.width = width;
+        lastObject.height = height;
+      }
+
       // Redraw canvas
+      this.objects.push(lastObject);
       this.draw();
     });
   }

@@ -21,16 +21,10 @@ export class Rectangle extends Drawable {
   }
 
   setWidth(newWidth: number) {
-    if (newWidth <= 0) {
-      throw new Error("Width must be positive");
-    }
     this.width = newWidth;
   }
 
   setHeight(newHeight: number) {
-    if (newHeight <= 0) {
-      throw new Error("Height must be positive");
-    }
     this.width = newHeight;
   }
 
