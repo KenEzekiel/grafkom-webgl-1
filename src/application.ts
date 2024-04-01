@@ -1,5 +1,4 @@
 import { Drawable } from "./lib/drawable/base";
-import { Line } from "./lib/drawable/line";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
@@ -7,15 +6,12 @@ import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
 
 export type ApplicationProgram = Application["program"];
 
-const drawableShapes = ["line", "square", "rectangle", "polygon"];
-type DrawableShape = (typeof drawableShapes)[number];
-
 export class Application {
   private gl;
   private program;
   private objects: Array<Drawable> = [];
-  private toolbars = new Toolbars(drawableShapes);
-  private selectedShape: undefined | DrawableShape = undefined;
+  private toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
+  private selectedShape: undefined | string = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -63,20 +59,32 @@ export class Application {
       this.selectedShape = name;
     });
 
+    canvas.addEventListener("click", (e) => {
+      if (this.selectedShape === "line") {
+        return;
+      }
+    });
+
     canvas.addEventListener("mousemove", (e) => {
       if (!this.selectedShape) {
         return;
       }
 
-      const boundingRect = (e.currentTarget as any).getBoundingClientRect();
-      const x = e.clientX - boundingRect.x;
-      const y = e.clientY - boundingRect.y;
+      const { x, y } = this.getMousePosition(e);
       console.log(x, y);
+
       // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
 
       // Redraw canvas
       this.draw();
     });
+  }
+
+  public getMousePosition(e: MouseEvent) {
+    const boundingRect = (e.currentTarget as any).getBoundingClientRect();
+    const x = e.clientX - boundingRect.x;
+    const y = e.clientY - boundingRect.y;
+    return { x, y };
   }
 
   public draw() {
