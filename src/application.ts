@@ -76,8 +76,16 @@ export class Application {
       }
       if (this.selectedToolbar === "line") {
         // Put one point of the line the mouse position
+        const { x, y } = this.getMousePosition(e);
         this.objects.push(
-          new Line([position, position], [255, 255, 255], this.program)
+          new Line(
+            [
+              { x, y },
+              { x, y },
+            ],
+            [255, 255, 255],
+            this.program
+          )
         );
         return;
       }
