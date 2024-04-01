@@ -21,6 +21,7 @@ export class Application {
     "rectangle",
     "polygon",
     "select-shape",
+    "delete",
   ]);
   private colorpicker = new ColorPicker("colorpicker");
   private selectedObject: Drawable | undefined = undefined;
@@ -88,11 +89,21 @@ export class Application {
     canvas.addEventListener("click", (e) => {
       // Logic for selecting a shape
       const position = this.getMousePosition(e);
-      if (this.toolbars.activeToolbar === "select-shape") {
-        this.selectedObject = this.getFirstSelected(position);
-        if (!this.selectedObject) {
+      if (this.toolbars.activeToolbar === "delete") {
+        const { index } = this.getFirstSelected(position);
+        if (index === -1) {
           return;
         }
+
+        this.objects.splice(index, 1);
+      }
+
+      if (this.toolbars.activeToolbar === "select-shape") {
+        const { selected } = this.getFirstSelected(position);
+        if (!selected) {
+          return;
+        }
+        this.selectedObject = selected;
         this.colorpicker.setColor(this.selectedObject.color);
       }
 
@@ -254,10 +265,10 @@ export class Application {
   public getFirstSelected(mousePosition: Point) {
     for (let i = this.objects.length - 1; i >= 0; i--) {
       if (this.objects[i].isSelected(mousePosition)) {
-        return this.objects[i];
+        return { selected: this.objects[i], index: i };
       }
     }
-    return undefined;
+    return { selected: undefined, index: -1 };
   }
 
   public addObject(obj: Drawable) {
