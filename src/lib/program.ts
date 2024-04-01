@@ -135,7 +135,6 @@ export class Program<
   public setUniforms(uniforms: {
     [K in keyof TUniforms]?: any[];
   }) {
-    console.log(uniforms);
     Object.entries(uniforms).forEach(([item, args]) => {
       if (!args) {
         return;
