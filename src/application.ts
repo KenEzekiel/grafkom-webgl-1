@@ -1,5 +1,6 @@
 import { Drawable } from "./lib/drawable/base";
 import { Line } from "./lib/drawable/line";
+import { Square } from "./lib/drawable/square";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
@@ -49,6 +50,9 @@ export class Application {
       },
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
+    this.objects.push(
+      new Square({ x: 0, y: 0 }, 100, [255, 255, 255], this.program)
+    );
 
     this.toolbars.setOnActive((name: string) => {
       // If the toolbar is changed in the middle of drawing a shape, remove the unfinished shape
@@ -78,6 +82,20 @@ export class Application {
             this.program
           )
         );
+        console.log(this.selectedShape);
+        if (this.selectedShape === "line") {
+          return;
+        }
+
+        if (this.selectedShape === "square") {
+          const point = this.getMousePosition(e);
+          this.objects.push(
+            new Square(point, 1, [255, 255, 255], this.program)
+          );
+          this.draw();
+          console.log("Nyampe");
+          return;
+        }
       }
     });
 
@@ -86,14 +104,14 @@ export class Application {
         return;
       }
 
+      if (this.getLastObject()?.finishDrawn) {
+        return;
+      }
+
       const { x, y } = this.getMousePosition(e);
       // console.log(x, y);
 
       // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
-
-      if (this.getLastObject() && this.getLastObject()?.finishDrawn) {
-        return;
-      }
       var lastObject = this.getLastObject();
       this.objects.pop();
 
@@ -102,10 +120,20 @@ export class Application {
         lastObject.points[1].x = x;
         lastObject.points[1].y = y;
         this.objects.push(lastObject);
-      }
 
-      // Redraw canvas
-      this.draw();
+        // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
+
+        if (this.selectedShape === "square") {
+          const square = this.getLastObject() as Square;
+          const { x: cornerX, y: cornerY } = square.points;
+          const lengthY = Math.abs(cornerY - y);
+          const lengthX = Math.abs(cornerX - x);
+          square.length = Math.min(lengthX, lengthY);
+        }
+
+        // Redraw canvas
+        this.draw();
+      }
     });
   }
 
