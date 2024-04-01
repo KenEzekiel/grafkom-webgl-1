@@ -7,8 +7,8 @@
     <title>Grafkom FatihKocak</title>
   </head>
   <body class="w-full flex">
-    <div id="app" class="w-fit flex flex-col">
-      <div class="p-2 toolbars flex flex-col space-y-2 w-fit">
+    <div id="app" class="w-fit flex flex-col justify-start items-center">
+      <div class="p-2 toolbars w-fit grid grid-cols-2 gap-2">
         <button class="btn btn-sm btn-primary w-8 h-8 p-0 line">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -75,11 +75,18 @@
         </button>
       </div>
       <div>
-        <input type="color" id="colorpicker" name="colorpicker" value="#ffffff" />
+        <input type="color" id="color-picker" name="color-picker" value="#ffffff" />
       </div>
       <button class="btn-secondary text-white" id="clear-button">
         Clear
       </button>
+
+      <button class="btn-secondary text-white" id="download-button">
+        Download
+      </button>
+
+      <input type="file" id="model-input" name="model-input" accept="application/JSON" />
+      <label for="model-input">Load Model File</label>
       
       <!-- <input
         type="range"

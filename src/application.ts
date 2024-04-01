@@ -3,6 +3,7 @@ import { Drawable } from "./lib/drawable/base";
 import { Line } from "./lib/drawable/line";
 import { Polygon } from "./lib/drawable/polygon";
 import { Rectangle } from "./lib/drawable/rectangle";
+import { FileInput } from "./lib/fileinput";
 import { Point } from "./lib/primitives";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
@@ -23,7 +24,8 @@ export class Application {
     "select-shape",
     "delete",
   ]);
-  private colorpicker = new ColorPicker("colorpicker");
+  private colorPicker = new ColorPicker("color-picker");
+  private fileInput = new FileInput("model-input");
   private selectedObject: Drawable | undefined = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -68,13 +70,21 @@ export class Application {
       this.draw();
     });
 
-    this.draw();
+    // Accepting model files
+    this.fileInput.onFileInput((files) => {
+      const modelFile = files.item(0);
+    });
 
-    this.colorpicker.onValueChange(() => {
+    // Downloading model files
+    document
+      .querySelector("#clear-button")!
+      .addEventListener("click", (e) => {});
+
+    this.colorPicker.onValueChange(() => {
       if (!this.selectedObject) {
         return;
       }
-      this.selectedObject.color = this.colorpicker.getColor();
+      this.selectedObject.color = this.colorPicker.getColor();
       this.draw();
     });
 
@@ -104,7 +114,7 @@ export class Application {
           return;
         }
         this.selectedObject = selected;
-        this.colorpicker.setColor(this.selectedObject.color);
+        this.colorPicker.setColor(this.selectedObject.color);
       }
 
       const lastObject = this.getLastObject();
@@ -133,7 +143,7 @@ export class Application {
               { x, y },
               { x, y },
             ],
-            this.colorpicker.getColor(),
+            this.colorPicker.getColor(),
             this.program
           )
         );
@@ -145,7 +155,7 @@ export class Application {
             position,
             0,
             0,
-            this.colorpicker.getColor(),
+            this.colorPicker.getColor(),
             this.program
           )
         );
@@ -157,7 +167,7 @@ export class Application {
             position,
             0,
             0,
-            this.colorpicker.getColor(),
+            this.colorPicker.getColor(),
             this.program
           )
         );
@@ -167,7 +177,7 @@ export class Application {
         this.addObject(
           new Polygon(
             [{ ...position }, { ...position }],
-            this.colorpicker.getColor(),
+            this.colorPicker.getColor(),
             this.program
           )
         );
