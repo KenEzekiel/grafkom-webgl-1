@@ -156,6 +156,8 @@ export class Application {
   }
 
   public changeState(newState: BaseAppState) {
+    console.log("prev", this.state);
+    console.log("new", newState);
     this.state.onBeforeChange();
     this.state = newState;
     this.draw();
@@ -178,5 +180,12 @@ export class Application {
       width: rect.width,
       height: rect.height,
     };
+  }
+
+  public removeObjectAt(index: number) {
+    if (index !== -1) {
+      this.objects.splice(index, 1);
+      this.draw();
+    }
   }
 }

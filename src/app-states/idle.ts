@@ -16,18 +16,17 @@ export class IdleState extends BaseAppState {
 
   onClick(point: Point): void {
     if (this.app.toolbars.activeToolbar === "select-shape") {
-      const { index, selected } = this.app.getFirstSelected(point);
-      console.log({ index, selected });
-      if (selected) {
+      const { index } = this.app.getFirstSelected(point);
+      if (index !== -1) {
         this.app.changeState(new SelectShapeState(this.app, index));
       }
       return;
+    } else if (this.app.toolbars.activeToolbar === "erase") {
+      const { index } = this.app.getFirstSelected(point);
+      this.app.changeState(new EraseState(this.app, index));
     }
 
     switch (this.app.toolbars.activeToolbar) {
-      case "erase":
-        this.app.changeState(new EraseState(this.app));
-        break;
       case "line":
         const { x, y } = point;
         this.app.changeState(
