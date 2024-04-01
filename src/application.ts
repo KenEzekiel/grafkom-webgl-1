@@ -1,3 +1,4 @@
+import { saveAs } from "file-saver";
 import { BaseAppState } from "./app-states/base";
 import { IdleState } from "./app-states/idle";
 import { SelectShapeState } from "./app-states/select-shape";
@@ -78,6 +79,11 @@ export class Application {
       this.changeState(new IdleState(this));
     });
 
+    // Implement export button
+    document
+      .querySelector("#export-button")!
+      .addEventListener("click", () => this.downloadImage(this.canvas));
+
     // Accepting model files
     this.fileInput.onFileInput((files) => {
       const modelFile = files.item(0);
@@ -112,6 +118,8 @@ export class Application {
     canvas.addEventListener("mouseup", (e) => {
       this.state.onMouseUp(this.getMousePosition(e));
     });
+
+    console.log(this.canvas);
   }
 
   public getMousePosition(e: MouseEvent) {
@@ -170,9 +178,7 @@ export class Application {
   }
 
   public getCanvasSize() {
-    const rect = document
-      .getElementById("main-canvas")!
-      .getBoundingClientRect();
+    const rect = this.canvas.getBoundingClientRect();
     return {
       width: rect.width,
       height: rect.height,
@@ -184,5 +190,15 @@ export class Application {
       this.objects.splice(index, 1);
       this.draw();
     }
+  }
+
+  private downloadImage(canvas: HTMLCanvasElement) {
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        return;
+      }
+      let file = new File([blob], "exportedImage.jpg", { type: "image/jpeg" });
+      saveAs(file);
+    }, "image/jpeg");
   }
 }
