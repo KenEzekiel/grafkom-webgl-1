@@ -19,6 +19,10 @@ export class Polygon extends Drawable {
     return this.points[0];
   }
 
+  getPoints(): Point[] {
+    return this.points;
+  }
+
   isSelected(mousePosition: Point, toLength = this.points.length): boolean {
     if (toLength < 3) {
       return false;

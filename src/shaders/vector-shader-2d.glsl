@@ -25,5 +25,6 @@ void main() {
   // convert from 0->2 to -1->+1 (clip space)
   vec2 clipSpace = zeroToTwo - 1.0;
 
+  gl_PointSize = 10.0;
   gl_Position = vec4(clipSpace.x, -clipSpace.y, 0, 1);
 }

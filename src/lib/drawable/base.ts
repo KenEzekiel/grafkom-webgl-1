@@ -3,7 +3,6 @@ import { Color, Point, Vec2 } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   public scale: number = 1;
-  public finishDrawn: boolean = false;
 
   constructor(public color: Color, protected program: ApplicationProgram) {}
   abstract draw(): void;
@@ -11,6 +10,8 @@ export abstract class Drawable {
   abstract getRotationPoint(): Point;
 
   abstract isSelected(mousePosition: Point): boolean;
+
+  abstract getPoints(): Point[];
 
   setRotation(degree: number) {
     this.rotation = [
@@ -33,7 +34,25 @@ export abstract class Drawable {
     });
   }
 
-  finalize() {
-    this.finishDrawn = true;
+  drawPoints() {
+    const points: Array<number> = [];
+
+    for (const point of this.getPoints()) {
+      points.push(point.x, point.y);
+    }
+
+    this.program.setUniforms({
+      color: [1, 1, 0.5, 1],
+      rotation: [0, 1],
+      scale: [1],
+    });
+
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(points),
+      this.program.gl.STATIC_DRAW
+    );
+
+    this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
   }
 }

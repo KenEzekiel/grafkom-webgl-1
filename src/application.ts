@@ -1,8 +1,8 @@
+import { BaseAppState } from "./app-states/base";
+import { IdleState } from "./app-states/idle";
+import { SelectShapeState } from "./app-states/select-shape";
 import { ColorPicker } from "./lib/colorpicker";
 import { Drawable } from "./lib/drawable/base";
-import { Line } from "./lib/drawable/line";
-import { Polygon } from "./lib/drawable/polygon";
-import { Rectangle } from "./lib/drawable/rectangle";
 import { FileInput } from "./lib/fileinput";
 import { Loader } from "./lib/loader";
 import { Point } from "./lib/primitives";
@@ -14,10 +14,10 @@ import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
 export type ApplicationProgram = Application["program"];
 
 export class Application {
-  private gl;
-  private program;
-  private objects: Array<Drawable> = [];
-  private toolbars = new Toolbars([
+  public gl;
+  public program;
+  public objects: Array<Drawable> = [];
+  public toolbars = new Toolbars([
     "line",
     "square",
     "rectangle",
@@ -25,9 +25,10 @@ export class Application {
     "select-shape",
     "delete",
   ]);
-  private colorPicker = new ColorPicker("color-picker");
+  public colorPicker = new ColorPicker("color-picker");
   private fileInput = new FileInput("model-input");
-  private selectedObject: Drawable | undefined = undefined;
+
+  private state: BaseAppState;
 
   constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -65,10 +66,12 @@ export class Application {
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
 
+    this.state = new IdleState(this);
+
     // Implement clear button
     document.querySelector("#clear-button")!.addEventListener("click", () => {
       this.objects = [];
-      this.draw();
+      this.changeState(new IdleState(this));
     });
 
     // Accepting model files
@@ -84,19 +87,10 @@ export class Application {
       });
 
     this.colorPicker.onValueChange(() => {
-      if (!this.selectedObject) {
+      if (!(this.state instanceof SelectShapeState)) {
         return;
       }
-      this.selectedObject.color = this.colorPicker.getColor();
-      this.draw();
-    });
-
-    this.toolbars.setOnActive(() => {
-      // If the toolbar is changed in the middle of drawing a shape, remove the unfinished shape
-      if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
-        this.objects.pop();
-        this.draw();
-      }
+      this.state.onColorPickerChange(this.colorPicker.getColor());
     });
 
     canvas.addEventListener("click", (e) => {
@@ -111,144 +105,11 @@ export class Application {
         this.objects.splice(index, 1);
       }
 
-      if (this.toolbars.activeToolbar === "select-shape") {
-        const { selected } = this.getFirstSelected(position);
-        if (!selected) {
-          return;
-        }
-        this.selectedObject = selected;
-        this.colorPicker.setColor(this.selectedObject.color);
-      }
-
-      const lastObject = this.getLastObject();
-      if (lastObject) {
-        if (lastObject instanceof Polygon && !lastObject.finishDrawn) {
-          if (lastObject.isSelected(position, lastObject.points.length - 1)) {
-            lastObject.deletePoint(lastObject.points.length - 1);
-            this.finalizeObject(lastObject);
-          } else {
-            lastObject.addPoint(position);
-          }
-          this.draw();
-          return;
-        } else if (!lastObject.finishDrawn) {
-          this.finalizeObject(lastObject);
-          return;
-        }
-      }
-
-      if (this.toolbars.activeToolbar === "line") {
-        // Put one point of the line the mouse position
-        const { x, y } = this.getMousePosition(e);
-        this.addObject(
-          new Line(
-            [
-              { x, y },
-              { x, y },
-            ],
-            this.colorPicker.getColor(),
-            this.program
-          )
-        );
-      }
-
-      if (this.toolbars.activeToolbar === "square") {
-        this.objects.push(
-          new Rectangle(
-            position,
-            0,
-            0,
-            this.colorPicker.getColor(),
-            this.program
-          )
-        );
-      }
-
-      if (this.toolbars.activeToolbar === "rectangle") {
-        this.objects.push(
-          new Rectangle(
-            position,
-            0,
-            0,
-            this.colorPicker.getColor(),
-            this.program
-          )
-        );
-      }
-
-      if (this.toolbars.activeToolbar === "polygon") {
-        this.addObject(
-          new Polygon(
-            [{ ...position }, { ...position }],
-            this.colorPicker.getColor(),
-            this.program
-          )
-        );
-      }
-
-      this.draw();
+      this.state.onClick(this.getMousePosition(e));
     });
 
     canvas.addEventListener("mousemove", (e) => {
-      if (!this.toolbars.activeToolbar) {
-        return;
-      }
-
-      if (this.getLastObject()?.finishDrawn) {
-        return;
-      }
-
-      const { x, y } = this.getMousePosition(e);
-
-      // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
-      const lastObject = this.getLastObject();
-
-      if (!lastObject) {
-        return;
-      }
-
-      if (lastObject instanceof Line) {
-        lastObject.points[1].x = x;
-        lastObject.points[1].y = y;
-      }
-
-      if (
-        lastObject instanceof Rectangle &&
-        this.toolbars.activeToolbar === "square"
-      ) {
-        let dx = lastObject.point.x;
-        let dy = lastObject.point.y;
-        // console.log(cornerX, cornerY);
-        const lengthY = y - dy;
-        const lengthX = x - dx;
-        const resultingLength =
-          Math.min(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
-            ? lengthY
-            : lengthX;
-
-        lastObject.width = resultingLength * (lengthX > 0 ? 1 : -1);
-        lastObject.height = resultingLength * (lengthY > 0 ? 1 : -1);
-      }
-
-      if (
-        lastObject instanceof Rectangle &&
-        this.toolbars.activeToolbar === "rectangle"
-      ) {
-        let dx = lastObject.point.x;
-        let dy = lastObject.point.y;
-
-        let width = x - dx;
-        let height = y - dy;
-
-        lastObject.width = width;
-        lastObject.height = height;
-      }
-
-      if (lastObject instanceof Polygon) {
-        lastObject.updateLastPoint({ x, y });
-      }
-
-      this.draw();
+      this.state.onMouseMove(this.getMousePosition(e));
     });
   }
 
@@ -266,6 +127,10 @@ export class Application {
     this.objects.forEach((obj) => {
       obj.draw();
     });
+
+    if (this.state instanceof SelectShapeState) {
+      this.state.selectObj.drawPoints();
+    }
   }
 
   public getLastObject() {
@@ -286,11 +151,9 @@ export class Application {
 
   public addObject(obj: Drawable) {
     this.objects.push(obj);
-    this.toolbars.setEnableChange(false);
   }
 
-  public finalizeObject(obj: Drawable) {
-    obj.finalize();
-    this.toolbars.setEnableChange(true);
+  public changeState(newState: BaseAppState) {
+    this.state = newState;
   }
 }

@@ -14,6 +14,10 @@ export class Line extends Drawable {
 
   public proximityThickness = 5;
 
+  getPoints(): Point[] {
+    return this.points;
+  }
+
   getRotationPoint(): Point {
     return {
       x: (this.points[0].x + this.points[1].x) / 2,

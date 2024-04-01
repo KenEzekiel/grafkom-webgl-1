@@ -13,6 +13,15 @@ export class Square extends Drawable {
     super(color, application);
   }
 
+  getPoints(): Point[] {
+    return [
+      this.points,
+      { x: this.points.x + this.length, y: this.points.y },
+      { x: this.points.x, y: this.points.y + this.length },
+      { x: this.points.x + this.length, y: this.points.y + this.length },
+    ];
+  }
+
   isSelected(mousePosition: Point): boolean {
     const { x: mouseX, y: mouseY } = mousePosition;
     const withinX =

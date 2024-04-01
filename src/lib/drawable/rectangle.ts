@@ -14,6 +14,15 @@ export class Rectangle extends Drawable {
     super(color, application);
   }
 
+  getPoints(): Point[] {
+    return [
+      this.point,
+      { x: this.point.x + this.width, y: this.point.y },
+      { x: this.point.x, y: this.point.y + this.height },
+      { x: this.point.x + this.width, y: this.point.y + this.height },
+    ];
+  }
+
   getRotationPoint(): Point {
     return {
       x: this.point.x + this.width / 2,
