@@ -1,8 +1,8 @@
 import { ColorPicker } from "./lib/colorpicker";
 import { Drawable } from "./lib/drawable/base";
 import { Line } from "./lib/drawable/line";
+import { Polygon } from "./lib/drawable/polygon";
 import { Rectangle } from "./lib/drawable/rectangle";
-import { Square } from "./lib/drawable/square";
 import { Point } from "./lib/primitives";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
@@ -22,7 +22,6 @@ export class Application {
     "polygon",
     "select-shape",
   ]);
-  private selectedToolbar: undefined | string = undefined;
   private colorpicker = new ColorPicker("colorpicker");
   private selectedObject: Drawable | undefined = undefined;
 
@@ -78,20 +77,18 @@ export class Application {
       this.draw();
     });
 
-    this.toolbars.setOnActive((name: string) => {
+    this.toolbars.setOnActive(() => {
       // If the toolbar is changed in the middle of drawing a shape, remove the unfinished shape
       if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
         this.objects.pop();
         this.draw();
       }
-
-      this.selectedToolbar = name;
     });
 
     canvas.addEventListener("click", (e) => {
       // Logic for selecting a shape
       const position = this.getMousePosition(e);
-      if (this.selectedToolbar === "select-shape") {
+      if (this.toolbars.activeToolbar === "select-shape") {
         this.selectedObject = this.getFirstSelected(position);
         if (!this.selectedObject) {
           return;
@@ -99,17 +96,27 @@ export class Application {
         this.colorpicker.setColor(this.selectedObject.color);
       }
 
-      if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
-        this.getLastObject()?.finalize();
-        return;
+      const lastObject = this.getLastObject();
+      if (lastObject) {
+        if (lastObject instanceof Polygon && !lastObject.finishDrawn) {
+          if (lastObject.isSelected(position, lastObject.points.length - 1)) {
+            lastObject.deletePoint(lastObject.points.length - 1);
+            this.finalizeObject(lastObject);
+          } else {
+            lastObject.addPoint(position);
+          }
+          this.draw();
+          return;
+        } else if (!lastObject.finishDrawn) {
+          this.finalizeObject(lastObject);
+          return;
+        }
       }
 
-      console.log(this.colorpicker.getColor());
-
-      if (this.selectedToolbar === "line") {
+      if (this.toolbars.activeToolbar === "line") {
         // Put one point of the line the mouse position
         const { x, y } = this.getMousePosition(e);
-        this.objects.push(
+        this.addObject(
           new Line(
             [
               { x, y },
@@ -121,7 +128,7 @@ export class Application {
         );
       }
 
-      if (this.selectedToolbar === "square") {
+      if (this.toolbars.activeToolbar === "square") {
         this.objects.push(
           new Rectangle(
             position,
@@ -133,12 +140,22 @@ export class Application {
         );
       }
 
-      if (this.selectedToolbar === "rectangle") {
+      if (this.toolbars.activeToolbar === "rectangle") {
         this.objects.push(
           new Rectangle(
             position,
             0,
             0,
+            this.colorpicker.getColor(),
+            this.program
+          )
+        );
+      }
+
+      if (this.toolbars.activeToolbar === "polygon") {
+        this.addObject(
+          new Polygon(
+            [{ ...position }, { ...position }],
             this.colorpicker.getColor(),
             this.program
           )
@@ -149,7 +166,7 @@ export class Application {
     });
 
     canvas.addEventListener("mousemove", (e) => {
-      if (!this.selectedToolbar) {
+      if (!this.toolbars.activeToolbar) {
         return;
       }
 
@@ -166,8 +183,6 @@ export class Application {
         return;
       }
 
-      this.objects.pop();
-
       if (lastObject instanceof Line) {
         lastObject.points[1].x = x;
         lastObject.points[1].y = y;
@@ -175,7 +190,7 @@ export class Application {
 
       if (
         lastObject instanceof Rectangle &&
-        this.selectedToolbar === "square"
+        this.toolbars.activeToolbar === "square"
       ) {
         let dx = lastObject.point.x;
         let dy = lastObject.point.y;
@@ -193,7 +208,7 @@ export class Application {
 
       if (
         lastObject instanceof Rectangle &&
-        this.selectedToolbar === "rectangle"
+        this.toolbars.activeToolbar === "rectangle"
       ) {
         let dx = lastObject.point.x;
         let dy = lastObject.point.y;
@@ -205,8 +220,10 @@ export class Application {
         lastObject.height = height;
       }
 
-      // Redraw canvas
-      this.objects.push(lastObject);
+      if (lastObject instanceof Polygon) {
+        lastObject.updateLastPoint({ x, y });
+      }
+
       this.draw();
     });
   }
@@ -241,5 +258,15 @@ export class Application {
       }
     }
     return undefined;
+  }
+
+  public addObject(obj: Drawable) {
+    this.objects.push(obj);
+    this.toolbars.setEnableChange(false);
+  }
+
+  public finalizeObject(obj: Drawable) {
+    obj.finalize();
+    this.toolbars.setEnableChange(true);
   }
 }
