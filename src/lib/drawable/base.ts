@@ -2,6 +2,8 @@ import type { ApplicationProgram } from "../../application";
 import { Color, Point, Vec2 } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
+  protected rotationDegree: number = 0;
+
   public scale: number = 1;
   private pointsCache: Point[] | undefined;
 
@@ -26,6 +28,7 @@ export abstract class Drawable {
   }
 
   setRotation(degree: number) {
+    this.rotationDegree = degree;
     this.rotation = [
       Math.sin((degree * 2 * Math.PI) / 360),
       Math.cos((degree * 2 * Math.PI) / 360),
@@ -34,6 +37,10 @@ export abstract class Drawable {
 
   getRotation() {
     return this.rotation;
+  }
+
+  getRotationDegree() {
+    return this.rotationDegree;
   }
 
   prepare() {
@@ -47,6 +54,7 @@ export abstract class Drawable {
   }
 
   drawPoints() {
+    const rotationPoint = this.getRotationPoint();
     const points: Array<number> = [];
 
     for (const point of this.getPoints()) {
@@ -55,7 +63,8 @@ export abstract class Drawable {
 
     this.program.setUniforms({
       color: [1, 1, 0.5, 1],
-      rotation: [0, 1],
+      rotation: this.rotation,
+      rotationPoint: [rotationPoint.x, rotationPoint.y],
       scale: [1],
       pointSize: [10],
     });

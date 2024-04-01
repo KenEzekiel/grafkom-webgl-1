@@ -2,17 +2,34 @@ import { Application } from "../application";
 import { Drawable } from "../lib/drawable/base";
 import { Polygon } from "../lib/drawable/polygon";
 import { Color, Point } from "../lib/primitives";
+import { Slider } from "../lib/slider";
 import { BaseAppState } from "./base";
 import { IdleState } from "./idle";
 
 export class SelectShapeState extends BaseAppState {
   public selectObj: Drawable;
   public selectedPoint: Point | undefined;
+  private rotationSlider = new Slider("rotation-slider");
+  private horizontalSlider = new Slider("horizontal-slider");
+  private verticalSlider = new Slider("vertical-slider");
 
   constructor(app: Application, private selectIdx: number) {
     super(app);
+    app.manageSliderVisibility(true);
     this.selectObj = this.app.objects[this.selectIdx];
     this.app.colorPicker.setColor(this.selectObj.color);
+
+    this.rotationSlider.setValue(this.selectObj.getRotationDegree());
+
+    this.rotationSlider.onValueChange((value) => {
+      this.selectObj.setRotation(value);
+      this.app.draw();
+    });
+  }
+
+  onBeforeChange(): void {
+    this.app.manageSliderVisibility(false);
+    this.rotationSlider.cleanup();
   }
 
   onColorPickerChange(color: Color) {
@@ -35,8 +52,12 @@ export class SelectShapeState extends BaseAppState {
         return;
       }
       if (selected) {
-        this.selectIdx = index;
         this.selectObj = selected;
+        if (index !== this.selectIdx) {
+          this.rotationSlider.setValue(this.selectObj.getRotationDegree());
+        }
+
+        this.selectIdx = index;
         this.app.draw();
       }
     }

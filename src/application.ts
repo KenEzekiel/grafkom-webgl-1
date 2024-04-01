@@ -7,6 +7,7 @@ import { FileInput } from "./lib/fileinput";
 import { Loader } from "./lib/loader";
 import { Point } from "./lib/primitives";
 import { Program } from "./lib/program";
+import { Slider } from "./lib/slider";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
 import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
@@ -169,5 +170,14 @@ export class Application {
     this.state.onBeforeChange();
     this.state = newState;
     this.draw();
+  }
+
+  public manageSliderVisibility(visible: boolean) {
+    document
+      .querySelector("#slider-container")!
+      .classList.toggle("hidden", !visible);
+    document
+      .querySelector("#slider-container")!
+      .classList.toggle("flex", visible);
   }
 }
