@@ -14,6 +14,10 @@ export class Polygon extends Drawable {
     throw new Error("Method not implemented.");
   }
 
+  isSelected(mousePosition: Point): boolean {
+    return false;
+  }
+
   deletePoint(index: number) {
     if (index > this.points.length - 1) {
       throw new Error("Out of bound!");

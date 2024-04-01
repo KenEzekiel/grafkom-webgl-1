@@ -18,6 +18,10 @@ export class Line extends Drawable {
     };
   }
 
+  isSelected(mousePosition: Point): boolean {
+    return false;
+  }
+
   draw(): void {
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,

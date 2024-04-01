@@ -10,6 +10,8 @@ export abstract class Drawable {
 
   abstract getRotationPoint(): Point;
 
+  abstract isSelected(mousePosition: Point): boolean;
+
   setRotation(degree: number) {
     this.rotation = [
       Math.sin((degree * 2 * Math.PI) / 360),

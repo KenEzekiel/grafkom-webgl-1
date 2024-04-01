@@ -12,6 +12,10 @@ export class Square extends Drawable {
     super(color, application);
   }
 
+  isSelected(mousePosition: Point): boolean {
+    return false;
+  }
+
   getRotationPoint(): Point {
     return {
       x: this.points.x + this.length / 2,

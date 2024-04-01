@@ -45,6 +45,10 @@ export class Rectangle extends Drawable {
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }
 
+  isSelected(mousePosition: Point): boolean {
+    return false;
+  }
+
   calculateRectangle(x: number, y: number, width: number, height: number) {
     var x1 = x;
     var x2 = x + width;
