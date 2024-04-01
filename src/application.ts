@@ -7,11 +7,15 @@ import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
 
 export type ApplicationProgram = Application["program"];
 
+const drawableShapes = ["line", "square", "rectangle", "polygon"];
+type DrawableShape = (typeof drawableShapes)[number];
+
 export class Application {
   private gl;
   private program;
   private objects: Array<Drawable> = [];
-  private toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
+  private toolbars = new Toolbars(drawableShapes);
+  private selectedShape: undefined | DrawableShape = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -48,6 +52,31 @@ export class Application {
       },
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
+
+    this.toolbars.setOnActive((name: string) => {
+      // If the toolbar is changed in the middle of drawing a shape, remove the unfinished shape
+      if (this.getLastObject() && this.getLastObject()?.finishDrawn) {
+        this.objects.pop();
+        this.draw();
+      }
+
+      this.selectedShape = name;
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      if (!this.selectedShape) {
+        return;
+      }
+
+      const boundingRect = (e.currentTarget as any).getBoundingClientRect();
+      const x = e.clientX - boundingRect.x;
+      const y = e.clientY - boundingRect.y;
+      console.log(x, y);
+      // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
+
+      // Redraw canvas
+      this.draw();
+    });
   }
 
   public draw() {
@@ -57,5 +86,12 @@ export class Application {
     this.objects.forEach((obj) => {
       obj.draw();
     });
+  }
+
+  public getLastObject() {
+    if (this.objects.length === 0) {
+      return undefined;
+    }
+    return this.objects[this.objects.length - 1];
   }
 }

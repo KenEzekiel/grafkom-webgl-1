@@ -3,6 +3,7 @@ import { Color, Point, Vec2 } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   public scale: number = 1;
+  public finishDrawn: boolean = false;
 
   constructor(public color: Color, protected program: ApplicationProgram) {}
   abstract draw(): void;
