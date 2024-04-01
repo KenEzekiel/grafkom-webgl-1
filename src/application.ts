@@ -75,6 +75,7 @@ export class Application {
         return;
       }
       this.selectedObject.color = this.colorpicker.getColor();
+      this.draw();
     });
 
     this.toolbars.setOnActive((name: string) => {
