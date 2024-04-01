@@ -51,9 +51,6 @@ export class Application {
       },
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
-    this.objects.push(
-      new Square({ x: 100, y: 100 }, 100, [255, 255, 255], this.program)
-    );
     this.draw();
 
     this.toolbars.setOnActive((name: string) => {
@@ -85,13 +82,10 @@ export class Application {
           )
         );
       }
-      console.log(this.selectedShape);
 
       if (this.selectedShape === "square") {
         const point = this.getMousePosition(e);
-        this.objects.push(new Square(point, 1, [255, 255, 255], this.program));
-        this.draw();
-        console.log("Nyampe");
+        this.objects.push(new Square(point, 0, [255, 255, 255], this.program));
         return;
       }
 
@@ -131,14 +125,17 @@ export class Application {
 
       if (lastObject instanceof Square) {
         const { x: cornerX, y: cornerY } = lastObject.points;
-        const lengthY = cornerY - y;
-        const lengthX = cornerX - x;
+        console.log(cornerX, cornerY);
+        const lengthY = y - cornerY;
+        const lengthX = x - cornerX;
         const resultingLength =
           Math.min(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
             ? lengthY
             : lengthX;
+        // console.log(resultingLength);
 
         lastObject.length = resultingLength;
+        // console.log(lastObject);
       }
 
       if (lastObject instanceof Rectangle) {
