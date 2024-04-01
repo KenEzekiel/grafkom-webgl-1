@@ -4,6 +4,7 @@ import { Line } from "./lib/drawable/line";
 import { Polygon } from "./lib/drawable/polygon";
 import { Rectangle } from "./lib/drawable/rectangle";
 import { FileInput } from "./lib/fileinput";
+import { Loader } from "./lib/loader";
 import { Point } from "./lib/primitives";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
@@ -77,8 +78,10 @@ export class Application {
 
     // Downloading model files
     document
-      .querySelector("#clear-button")!
-      .addEventListener("click", (e) => {});
+      .querySelector("#download-button")!
+      .addEventListener("click", (e) => {
+        new Loader().saveJSON(this.objects, "model");
+      });
 
     this.colorPicker.onValueChange(() => {
       if (!this.selectedObject) {

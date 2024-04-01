@@ -1,5 +1,5 @@
 import { Drawable } from "./drawable/base";
-import * as fs from "fs";
+import FileSaver from "file-saver";
 
 export class Loader {
   getJSON(drawables: Array<Drawable>) {
@@ -7,7 +7,10 @@ export class Loader {
   }
 
   saveJSON(drawables: Array<Drawable>, name: String) {
-    fs.writeFileSync(name + ".json", JSON.stringify(drawables), "utf-8");
+    const file = new File([JSON.stringify(drawables)], `${name}.json`, {
+      type: "application/JSON;charset=utf-8",
+    });
+    FileSaver.saveAs(file);
   }
 
   readJSON(file: File) {
