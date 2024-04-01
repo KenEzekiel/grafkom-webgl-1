@@ -24,6 +24,7 @@ export class Application {
   ]);
   private selectedToolbar: undefined | string = undefined;
   private colorpicker = new ColorPicker("colorpicker");
+  private selectedObject: Drawable | undefined = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -60,7 +61,21 @@ export class Application {
       },
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
+
+    // Implement clear button
+    document.querySelector("#clear-button")!.addEventListener("click", () => {
+      this.objects = [];
+      this.draw();
+    });
+
     this.draw();
+
+    this.colorpicker.onValueChange(() => {
+      if (!this.selectedObject) {
+        return;
+      }
+      this.selectedObject.color = this.colorpicker.getColor();
+    });
 
     this.toolbars.setOnActive((name: string) => {
       // If the toolbar is changed in the middle of drawing a shape, remove the unfinished shape
@@ -76,11 +91,11 @@ export class Application {
       // Logic for selecting a shape
       const position = this.getMousePosition(e);
       if (this.selectedToolbar === "select-shape") {
-        const firstSelected = this.getFirstSelected(position);
-        if (!firstSelected) {
+        this.selectedObject = this.getFirstSelected(position);
+        if (!this.selectedObject) {
           return;
         }
-        firstSelected.color = [0, 0, 0];
+        this.colorpicker.setColor(this.selectedObject.color);
       }
 
       if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
