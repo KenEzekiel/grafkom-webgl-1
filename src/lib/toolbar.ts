@@ -23,8 +23,12 @@ class Toolbar<T extends string> {
   public toggle(active?: boolean) {
     const newActive = active === undefined ? !this.active : active;
     this.active = newActive;
+
     this.button.classList.toggle("btn-primary", !newActive);
+    this.button.classList.toggle("text-black", !newActive);
+
     this.button.classList.toggle("btn-secondary", newActive);
+    this.button.classList.toggle("text-white", newActive);
   }
 
   public setOnActive(callback: () => void) {

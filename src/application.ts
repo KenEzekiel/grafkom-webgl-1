@@ -2,6 +2,7 @@ import { Drawable } from "./lib/drawable/base";
 import { Line } from "./lib/drawable/line";
 import { Rectangle } from "./lib/drawable/rectangle";
 import { Square } from "./lib/drawable/square";
+import { Point } from "./lib/primitives";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
@@ -13,7 +14,13 @@ export class Application {
   private gl;
   private program;
   private objects: Array<Drawable> = [];
-  private toolbars = new Toolbars(["line", "square", "rectangle", "polygon"]);
+  private toolbars = new Toolbars([
+    "line",
+    "square",
+    "rectangle",
+    "polygon",
+    "select-shape",
+  ]);
   private selectedToolbar: undefined | string = undefined;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -66,14 +73,19 @@ export class Application {
     canvas.addEventListener("click", (e) => {
       // Logic for selecting a shape
       const position = this.getMousePosition(e);
-      if (this.selectedToolbar === "select") {
-        return;
+      if (this.selectedToolbar === "select-shape") {
+        const firstSelected = this.getFirstSelected(position);
+        if (!firstSelected) {
+          return;
+        }
+        firstSelected.color = [0, 0, 0];
       }
 
       if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
         this.getLastObject()?.finalize();
         return;
       }
+
       if (this.selectedToolbar === "line") {
         // Put one point of the line the mouse position
         const { x, y } = this.getMousePosition(e);
@@ -87,22 +99,21 @@ export class Application {
             this.program
           )
         );
-        return;
       }
 
       if (this.selectedToolbar === "square") {
         this.objects.push(
           new Rectangle(position, 0, 0, [255, 255, 255], this.program)
         );
-        return;
       }
 
       if (this.selectedToolbar === "rectangle") {
         this.objects.push(
           new Rectangle(position, 0, 0, [255, 255, 255], this.program)
         );
-        return;
       }
+
+      this.draw();
     });
 
     canvas.addEventListener("mousemove", (e) => {
@@ -189,5 +200,14 @@ export class Application {
       return undefined;
     }
     return this.objects[this.objects.length - 1];
+  }
+
+  public getFirstSelected(mousePosition: Point) {
+    for (let i = this.objects.length - 1; i >= 0; i--) {
+      if (this.objects[i].isSelected(mousePosition)) {
+        return this.objects[i];
+      }
+    }
+    return undefined;
   }
 }
