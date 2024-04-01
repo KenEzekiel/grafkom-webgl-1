@@ -64,22 +64,20 @@ export class Application {
     });
 
     canvas.addEventListener("click", (e) => {
+      // Logic for selecting a shape
+      if (this.selectedShape === "select") {
+        const position = this.getMousePosition(e);
+      }
+
       if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
         this.getLastObject()?.finalize();
         return;
       }
       if (this.selectedShape === "line") {
-        const { x, y } = this.getMousePosition(e);
+        const point = this.getMousePosition(e);
         // Put one point of the line the mouse position
         this.objects.push(
-          new Line(
-            [
-              { x, y },
-              { x, y },
-            ],
-            [255, 255, 255],
-            this.program
-          )
+          new Line([point, point], [255, 255, 255], this.program)
         );
       }
 
@@ -126,10 +124,11 @@ export class Application {
       }
 
       if (lastObject instanceof Rectangle && this.selectedShape === "square") {
-        const { x: cornerX, y: cornerY } = lastObject.point;
+        let dx = lastObject.point.x;
+        let dy = lastObject.point.y;
         // console.log(cornerX, cornerY);
-        const lengthY = y - cornerY;
-        const lengthX = x - cornerX;
+        const lengthY = y - dy;
+        const lengthX = x - dx;
         const resultingLength =
           Math.min(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
             ? lengthY
