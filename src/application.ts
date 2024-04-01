@@ -82,20 +82,15 @@ export class Application {
             this.program
           )
         );
-        console.log(this.selectedShape);
-        if (this.selectedShape === "line") {
-          return;
-        }
+      }
+      console.log(this.selectedShape);
 
-        if (this.selectedShape === "square") {
-          const point = this.getMousePosition(e);
-          this.objects.push(
-            new Square(point, 1, [255, 255, 255], this.program)
-          );
-          this.draw();
-          console.log("Nyampe");
-          return;
-        }
+      if (this.selectedShape === "square") {
+        const point = this.getMousePosition(e);
+        this.objects.push(new Square(point, 1, [255, 255, 255], this.program));
+        this.draw();
+        console.log("Nyampe");
+        return;
       }
     });
 
@@ -120,20 +115,18 @@ export class Application {
         lastObject.points[1].x = x;
         lastObject.points[1].y = y;
         this.objects.push(lastObject);
-
-        // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
-
-        if (this.selectedShape === "square") {
-          const square = this.getLastObject() as Square;
-          const { x: cornerX, y: cornerY } = square.points;
-          const lengthY = Math.abs(cornerY - y);
-          const lengthX = Math.abs(cornerX - x);
-          square.length = Math.min(lengthX, lengthY);
-        }
-
-        // Redraw canvas
-        this.draw();
       }
+
+      if (this.selectedShape === "square") {
+        const square = this.getLastObject() as Square;
+        const { x: cornerX, y: cornerY } = square.points;
+        const lengthY = Math.abs(cornerY - y);
+        const lengthX = Math.abs(cornerX - x);
+        square.length = Math.min(lengthX, lengthY);
+      }
+
+      // Redraw canvas
+      this.draw();
     });
   }
 
