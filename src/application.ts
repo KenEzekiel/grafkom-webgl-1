@@ -1,4 +1,5 @@
 import { Drawable } from "./lib/drawable/base";
+import { Line } from "./lib/drawable/line";
 import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
@@ -60,8 +61,23 @@ export class Application {
     });
 
     canvas.addEventListener("click", (e) => {
-      if (this.selectedShape === "line") {
+      if (this.getLastObject() && !this.getLastObject()?.finishDrawn) {
+        this.getLastObject()?.finalize();
         return;
+      }
+      if (this.selectedShape === "line") {
+        const { x, y } = this.getMousePosition(e);
+        // Put one point of the line the mouse position
+        this.objects.push(
+          new Line(
+            [
+              { x, y },
+              { x, y },
+            ],
+            [255, 255, 255],
+            this.program
+          )
+        );
       }
     });
 
@@ -71,9 +87,22 @@ export class Application {
       }
 
       const { x, y } = this.getMousePosition(e);
-      console.log(x, y);
+      // console.log(x, y);
 
       // Modify last object (the one that isn't yet final) in accordance to mouse movement and the selected object
+
+      if (this.getLastObject() && this.getLastObject()?.finishDrawn) {
+        return;
+      }
+      var lastObject = this.getLastObject();
+      this.objects.pop();
+
+      // If the last object is line
+      if (lastObject instanceof Line) {
+        lastObject.points[1].x = x;
+        lastObject.points[1].y = y;
+        this.objects.push(lastObject);
+      }
 
       // Redraw canvas
       this.draw();
