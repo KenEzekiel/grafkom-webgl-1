@@ -5,6 +5,7 @@ import { Line } from "./line";
 
 export class Polygon extends Drawable {
   private localPoints: Array<number> = [];
+  public type = "polygon";
 
   constructor(
     public points: Array<Point>,

@@ -3,6 +3,7 @@ import { Color, Point } from "../primitives";
 import { Drawable } from "./base";
 
 export class Line extends Drawable {
+  public type = "line";
   constructor(
     public points: [Point, Point],
     color: Color,

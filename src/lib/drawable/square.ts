@@ -3,6 +3,7 @@ import { Color, Point } from "../primitives";
 import { Drawable } from "./base";
 
 export class Square extends Drawable {
+  public type = "square";
   constructor(
     public points: Point,
     public length: number,

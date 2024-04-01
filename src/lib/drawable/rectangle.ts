@@ -3,6 +3,7 @@ import { Color, Point } from "../primitives";
 import { Drawable } from "./base";
 
 export class Rectangle extends Drawable {
+  public type = "rectangle";
   constructor(
     public point: Point,
     public width: number,
