@@ -14,7 +14,7 @@ export class Line extends Drawable {
 
   public proximityThickness = 5;
 
-  getPoints(): Point[] {
+  _getPoints(): Point[] {
     return this.points;
   }
 

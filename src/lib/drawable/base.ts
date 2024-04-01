@@ -3,6 +3,7 @@ import { Color, Point, Vec2 } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   public scale: number = 1;
+  private pointsCache: Point[] | undefined;
 
   constructor(public color: Color, protected program: ApplicationProgram) {}
   abstract draw(): void;
@@ -11,7 +12,18 @@ export abstract class Drawable {
 
   abstract isSelected(mousePosition: Point): boolean;
 
-  abstract getPoints(): Point[];
+  protected abstract _getPoints(): Point[];
+
+  public getPoints(): Point[] {
+    if (!this.pointsCache) {
+      this.pointsCache = this._getPoints();
+    }
+    return this.pointsCache;
+  }
+
+  public resetPoints() {
+    this.pointsCache = undefined;
+  }
 
   setRotation(degree: number) {
     this.rotation = [
@@ -45,6 +57,7 @@ export abstract class Drawable {
       color: [1, 1, 0.5, 1],
       rotation: [0, 1],
       scale: [1],
+      pointSize: [10],
     });
 
     this.program.gl.bufferData(
@@ -54,5 +67,34 @@ export abstract class Drawable {
     );
 
     this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
+
+    this.program.setUniforms({
+      color: [0, 0, 0, 1],
+      pointSize: [4],
+    });
+
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(points),
+      this.program.gl.STATIC_DRAW
+    );
+
+    this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
+  }
+
+  getSelectedPoint(position: Point) {
+    const points = this.getPoints();
+    for (let i = 0; i < points.length; i++) {
+      const point = points[i];
+      if (
+        position.x >= point.x - 5 &&
+        position.x <= point.x + 5 &&
+        position.y >= point.y - 5 &&
+        position.y <= point.y + 5
+      ) {
+        return { index: i, selected: point };
+      }
+    }
+    return { index: -1, selected: undefined };
   }
 }

@@ -13,7 +13,7 @@ export class Square extends Drawable {
     super(color, application);
   }
 
-  getPoints(): Point[] {
+  _getPoints(): Point[] {
     return [
       this.points,
       { x: this.points.x + this.length, y: this.points.y },

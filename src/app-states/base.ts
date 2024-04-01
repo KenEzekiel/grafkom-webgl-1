@@ -2,11 +2,15 @@ import { Application } from "../application";
 import { Point } from "../lib/primitives";
 
 export abstract class BaseAppState {
-  constructor(protected app: Application) {
-    this.app.draw();
-  }
+  constructor(protected app: Application) {}
 
-  abstract onClick(point: Point): void;
+  onClick(_point: Point) {}
 
-  abstract onMouseMove(point: Point): void;
+  onMouseMove(_point: Point) {}
+
+  onMouseDown(_point: Point) {}
+
+  onMouseUp(_point: Point) {}
+
+  onBeforeChange() {}
 }

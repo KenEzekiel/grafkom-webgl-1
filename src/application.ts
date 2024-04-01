@@ -30,7 +30,7 @@ export class Application {
 
   private state: BaseAppState;
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(public canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
     if (!gl) {
       throw new Error("WebGL not supported");
@@ -61,6 +61,10 @@ export class Application {
         },
         scale: {
           type: "uniform1f",
+        },
+        pointSize: {
+          type: "uniform1f",
+          args: [10.0],
         },
       },
     });
@@ -111,6 +115,14 @@ export class Application {
     canvas.addEventListener("mousemove", (e) => {
       this.state.onMouseMove(this.getMousePosition(e));
     });
+
+    canvas.addEventListener("mousedown", (e) => {
+      this.state.onMouseDown(this.getMousePosition(e));
+    });
+
+    canvas.addEventListener("mouseup", (e) => {
+      this.state.onMouseUp(this.getMousePosition(e));
+    });
   }
 
   public getMousePosition(e: MouseEvent) {
@@ -154,6 +166,8 @@ export class Application {
   }
 
   public changeState(newState: BaseAppState) {
+    this.state.onBeforeChange();
     this.state = newState;
+    this.draw();
   }
 }

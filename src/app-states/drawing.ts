@@ -56,6 +56,7 @@ export class DrawingState extends BaseAppState {
 
       this.object.width = resultingLength * (lengthX > 0 ? 1 : -1);
       this.object.height = resultingLength * (lengthY > 0 ? 1 : -1);
+      this.object.resetPoints();
     } else if (
       this.object instanceof Rectangle &&
       this.app.toolbars.activeToolbar === "rectangle"
@@ -68,6 +69,7 @@ export class DrawingState extends BaseAppState {
 
       this.object.width = width;
       this.object.height = height;
+      this.object.resetPoints();
     } else if (this.object instanceof Polygon) {
       this.object.updateLastPoint({ x, y });
     }

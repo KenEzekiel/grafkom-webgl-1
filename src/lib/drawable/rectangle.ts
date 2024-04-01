@@ -14,7 +14,7 @@ export class Rectangle extends Drawable {
     super(color, application);
   }
 
-  getPoints(): Point[] {
+  _getPoints(): Point[] {
     return [
       this.point,
       { x: this.point.x + this.width, y: this.point.y },

@@ -19,7 +19,7 @@ export class Polygon extends Drawable {
     return this.points[0];
   }
 
-  getPoints(): Point[] {
+  _getPoints(): Point[] {
     return this.points;
   }
 
@@ -58,6 +58,16 @@ export class Polygon extends Drawable {
     this.updateLocalPoints();
   }
 
+  changePoint(point: Point, toPoint: Point) {
+    const idx = this.points.findIndex((p) => p === point);
+    if (idx === -1) {
+      return;
+    }
+    point.x = toPoint.x;
+    point.y = toPoint.y;
+    this.updateLocalPoints();
+  }
+
   addPoint(point: Point) {
     this.points.push(point);
     this.updateLocalPoints();
@@ -73,6 +83,7 @@ export class Polygon extends Drawable {
     this.points.forEach((point) => {
       this.localPoints.push(point.x, point.y);
     });
+    this.resetPoints();
   }
 
   draw(): void {
