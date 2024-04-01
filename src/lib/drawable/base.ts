@@ -30,4 +30,8 @@ export abstract class Drawable {
       scale: [this.scale],
     });
   }
+
+  finalize() {
+    this.finishDrawn = true;
+  }
 }
