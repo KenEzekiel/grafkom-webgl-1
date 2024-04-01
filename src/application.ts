@@ -7,7 +7,6 @@ import { FileInput } from "./lib/fileinput";
 import { Loader } from "./lib/loader";
 import { Point } from "./lib/primitives";
 import { Program } from "./lib/program";
-import { Slider } from "./lib/slider";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
 import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
@@ -156,8 +155,6 @@ export class Application {
   }
 
   public changeState(newState: BaseAppState) {
-    console.log("prev", this.state);
-    console.log("new", newState);
     this.state.onBeforeChange();
     this.state = newState;
     this.draw();
