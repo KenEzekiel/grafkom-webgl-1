@@ -85,7 +85,9 @@ export class Application {
 
       if (this.selectedShape === "square") {
         const point = this.getMousePosition(e);
-        this.objects.push(new Square(point, 0, [255, 255, 255], this.program));
+        this.objects.push(
+          new Rectangle(point, 0, 0, [255, 255, 255], this.program)
+        );
         return;
       }
 
@@ -123,22 +125,24 @@ export class Application {
         lastObject.points[1].y = y;
       }
 
-      if (lastObject instanceof Square) {
-        const { x: cornerX, y: cornerY } = lastObject.points;
-        console.log(cornerX, cornerY);
+      if (lastObject instanceof Rectangle && this.selectedShape === "square") {
+        const { x: cornerX, y: cornerY } = lastObject.point;
+        // console.log(cornerX, cornerY);
         const lengthY = y - cornerY;
         const lengthX = x - cornerX;
         const resultingLength =
           Math.min(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
             ? lengthY
             : lengthX;
-        // console.log(resultingLength);
 
-        lastObject.length = resultingLength;
-        // console.log(lastObject);
+        lastObject.width = resultingLength * (lengthX > 0 ? 1 : -1);
+        lastObject.height = resultingLength * (lengthY > 0 ? 1 : -1);
       }
 
-      if (lastObject instanceof Rectangle) {
+      if (
+        lastObject instanceof Rectangle &&
+        this.selectedShape === "rectangle"
+      ) {
         let dx = lastObject.point.x;
         let dy = lastObject.point.y;
 
