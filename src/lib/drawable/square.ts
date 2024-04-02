@@ -1,5 +1,5 @@
 import { ApplicationProgram } from "../../application";
-import { Color, Point } from "../primitives";
+import { Color, Point, translatePoint } from "../primitives";
 import { Drawable } from "./base";
 
 export class Square extends Drawable {
@@ -39,9 +39,9 @@ export class Square extends Drawable {
     };
   }
 
-  translate({ x, y }: Point): void {
-    this.points.x += x;
-    this.points.y += y;
+  translate(translation: Point): void {
+    translatePoint(this.points, translation);
+    this.resetPointsCache();
   }
 
   draw(): void {

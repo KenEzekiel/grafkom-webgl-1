@@ -1,5 +1,5 @@
 import { ApplicationProgram } from "../../application";
-import { Color, Point } from "../primitives";
+import { Color, Point, translatePoint } from "../primitives";
 import { Drawable } from "./base";
 
 export class Rectangle extends Drawable {
@@ -38,12 +38,9 @@ export class Rectangle extends Drawable {
     this.width = newHeight;
   }
 
-  translate({ x, y }: Point): void {
-    this.point.x += x;
-    this.point.y += y;
-    if (this.pointsCache) {
-      this.pointsCache = this._getPoints();
-    }
+  translate(translation: Point): void {
+    translatePoint(this.point, translation);
+    this.resetPointsCache();
   }
 
   draw(): void {

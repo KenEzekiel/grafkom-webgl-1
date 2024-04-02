@@ -1,5 +1,5 @@
 import type { ApplicationProgram } from "../../application";
-import { Color, Point, Size, Vec2 } from "../primitives";
+import { Color, Point, Size, Vec2, rotatePoint } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   protected rotationDegree: number = 0;
@@ -25,7 +25,7 @@ export abstract class Drawable {
     return this.pointsCache;
   }
 
-  public resetPoints() {
+  public resetPointsCache() {
     this.pointsCache = undefined;
   }
 
@@ -51,6 +51,16 @@ export abstract class Drawable {
 
   getRotationDegree() {
     return this.rotationDegree;
+  }
+
+  rotatePoint(point: Point) {
+    rotatePoint(point, this.rotation, this.getRotationPoint());
+  }
+
+  rotatePoints(points: Point[]) {
+    points.forEach((point) => {
+      this.rotatePoint(point);
+    });
   }
 
   prepare() {
@@ -104,14 +114,15 @@ export abstract class Drawable {
   getSelectedPoint(position: Point) {
     const points = this.getPoints();
     for (let i = 0; i < points.length; i++) {
-      const point = points[i];
+      const point = { ...points[i] };
+      this.rotatePoint(point);
       if (
         position.x >= point.x - 5 &&
         position.x <= point.x + 5 &&
         position.y >= point.y - 5 &&
         position.y <= point.y + 5
       ) {
-        return { index: i, selected: point };
+        return { index: i, selected: points[i] };
       }
     }
     return { index: -1, selected: undefined };

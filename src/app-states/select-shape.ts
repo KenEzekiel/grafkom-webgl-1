@@ -9,6 +9,8 @@ import { IdleState } from "./idle";
 export class SelectShapeState extends BaseAppState {
   public selectObj: Drawable;
   public selectedPoint: Point | undefined;
+  public beforeSelectedLoc = { x: 0, y: 0 };
+  public selectedMouseLoc = { x: 0, y: 0 };
   private rotationSlider = new Slider("rotation-slider");
   private horizontalSlider = new Slider("horizontal-slider");
   private verticalSlider = new Slider("vertical-slider");
@@ -59,8 +61,14 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onMouseMove(point: Point): void {
+    const newSelectedPoint = {
+      x: this.beforeSelectedLoc.x + (point.x - this.selectedMouseLoc.x),
+      y: this.beforeSelectedLoc.y + (point.y - this.selectedMouseLoc.y),
+    };
     if (this.selectedPoint && this.selectObj instanceof Polygon) {
-      this.selectObj.changePoint(this.selectedPoint, point);
+      this.selectedPoint.x = newSelectedPoint.x;
+      this.selectedPoint.y = newSelectedPoint.y;
+      this.selectObj.updateLocalPoints();
       this.app.draw();
     }
   }
@@ -72,14 +80,8 @@ export class SelectShapeState extends BaseAppState {
         this.app.changeState(new IdleState(this.app));
         return;
       }
-      if (selected) {
-        this.selectObj = selected;
-        if (index !== this.selectIdx) {
-          this.updateSlider();
-        }
-
-        this.selectIdx = index;
-        this.app.draw();
+      if (selected && this.selectObj !== selected) {
+        this.app.changeState(new SelectShapeState(this.app, index));
       }
     }
     this.selectedPoint = undefined;
@@ -89,6 +91,8 @@ export class SelectShapeState extends BaseAppState {
     const { selected } = this.selectObj.getSelectedPoint(point);
     if (selected) {
       this.selectedPoint = selected;
+      this.beforeSelectedLoc = { ...selected };
+      this.selectedMouseLoc = { ...point };
     }
   }
 

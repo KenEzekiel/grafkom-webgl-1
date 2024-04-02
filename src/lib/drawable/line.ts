@@ -30,9 +30,7 @@ export class Line extends Drawable {
     this.points[0].y += y;
     this.points[1].x += x;
     this.points[1].y += y;
-    if (this.pointsCache) {
-      this.pointsCache = this._getPoints();
-    }
+    this.resetPointsCache();
   }
 
   isSelected(mousePosition: Point): boolean {

@@ -1,5 +1,5 @@
 import { ApplicationProgram } from "../../application";
-import { Color, Point } from "../primitives";
+import { Color, Point, translatePoint } from "../primitives";
 import { Drawable } from "./base";
 import { Line } from "./line";
 
@@ -29,9 +29,13 @@ export class Polygon extends Drawable {
     }
     let inside = false;
     const { x, y } = mousePosition;
-    let { x: p1x, y: p1y } = this.points[0];
+    const point1 = { ...this.points[0] };
+    this.rotatePoint(point1);
+    let { x: p1x, y: p1y } = point1;
     for (let i = 0; i <= toLength; i++) {
-      const { x: p2x, y: p2y } = this.points[i % toLength];
+      const point2 = { ...this.points[i % toLength] };
+      this.rotatePoint(point2);
+      const { x: p2x, y: p2y } = point2;
       if (
         y > Math.min(p1y, p2y) &&
         y <= Math.max(p1y, p2y) &&
@@ -68,15 +72,12 @@ export class Polygon extends Drawable {
     this.updateLocalPoints();
   }
 
-  translate({ x, y }: Point): void {
+  translate(translation: Point): void {
     for (let i = 0; i < this.points.length; i++) {
-      this.points[i].x += x;
-      this.points[i].y += y;
+      translatePoint(this.points[i], translation);
     }
 
-    if (this.pointsCache) {
-      this.pointsCache = this._getPoints();
-    }
+    this.resetPointsCache();
 
     this.updateLocalPoints();
   }
@@ -91,12 +92,12 @@ export class Polygon extends Drawable {
     this.updateLocalPoints();
   }
 
-  private updateLocalPoints() {
+  updateLocalPoints() {
     this.localPoints = [];
     this.points.forEach((point) => {
       this.localPoints.push(point.x, point.y);
     });
-    this.resetPoints();
+    this.resetPointsCache();
   }
 
   draw(): void {

@@ -118,8 +118,6 @@ export class Application {
     canvas.addEventListener("mouseup", (e) => {
       this.state.onMouseUp(this.getMousePosition(e));
     });
-
-    console.log(this.canvas);
   }
 
   public getMousePosition(e: MouseEvent) {
@@ -151,6 +149,10 @@ export class Application {
 
   public getFirstSelected(mousePosition: Point) {
     for (let i = this.objects.length - 1; i >= 0; i--) {
+      const position = { ...mousePosition };
+      console.log(position);
+      this.objects[i].rotatePoint(position);
+      console.log(position);
       if (this.objects[i].isSelected(mousePosition)) {
         return { selected: this.objects[i], index: i };
       }
