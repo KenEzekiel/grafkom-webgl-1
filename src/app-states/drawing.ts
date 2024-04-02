@@ -21,6 +21,16 @@ export class DrawingState extends BaseAppState {
       this.object instanceof Rectangle ||
       this.object instanceof Square
     ) {
+      if (this.object instanceof Rectangle) {
+        if (this.object.width < 0) {
+          this.object.point.x += this.object.width;
+          this.object.width *= -1;
+        }
+        if (this.object.height < 0) {
+          this.object.point.y += this.object.height;
+          this.object.height *= -1;
+        }
+      }
       this.app.changeState(new IdleState(this.app));
       return;
     }
