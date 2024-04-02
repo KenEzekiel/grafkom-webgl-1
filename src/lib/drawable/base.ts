@@ -3,6 +3,8 @@ import { Color, Point, Size, Vec2, rotatePoint } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   protected rotationDegree: number = 0;
+  public selectedVertex: Point | undefined;
+  public selectedVertexIdx = -1;
 
   public scale: number = 1;
   protected pointsCache: Point[] | undefined;
@@ -17,6 +19,10 @@ export abstract class Drawable {
   abstract translate(translation: Point): void;
 
   protected abstract _getPoints(): Point[];
+
+  abstract translateVertex(translation: Point, beforeLoc: Point): void;
+
+  doneTranslateVertex() {}
 
   public getPoints(): Point[] {
     if (!this.pointsCache) {
@@ -126,5 +132,15 @@ export abstract class Drawable {
       }
     }
     return { index: -1, selected: undefined };
+  }
+
+  selectVertex(vertex: Point, idx: number) {
+    this.selectedVertex = vertex;
+    this.selectedVertexIdx = idx;
+  }
+
+  deselectVertex() {
+    this.selectedVertex = undefined;
+    this.selectedVertexIdx = -1;
   }
 }

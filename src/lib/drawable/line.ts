@@ -60,4 +60,13 @@ export class Line extends Drawable {
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.LINES, 0, 2);
   }
+
+  translateVertex(translation: Point, beforeLoc: Point): void {
+    if (this.selectedVertexIdx === -1) {
+      return;
+    }
+    this.points[this.selectedVertexIdx].x = beforeLoc.x + translation.x;
+    this.points[this.selectedVertexIdx].y = beforeLoc.y + translation.y;
+    this.resetPointsCache();
+  }
 }

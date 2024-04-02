@@ -22,14 +22,7 @@ export class DrawingState extends BaseAppState {
       this.object instanceof Square
     ) {
       if (this.object instanceof Rectangle) {
-        if (this.object.width < 0) {
-          this.object.point.x += this.object.width;
-          this.object.width *= -1;
-        }
-        if (this.object.height < 0) {
-          this.object.point.y += this.object.height;
-          this.object.height *= -1;
-        }
+        this.object.adjustNegativeDimension();
       }
       this.app.changeState(new IdleState(this.app));
       return;
@@ -50,35 +43,27 @@ export class DrawingState extends BaseAppState {
     if (this.object instanceof Line) {
       this.object.points[1].x = x;
       this.object.points[1].y = y;
-    } else if (this.object instanceof Square) {
+    } else if (
+      this.object instanceof Rectangle &&
+      this.app.toolbars.activeToolbar === "square"
+    ) {
       let dx = this.object.point.x;
       let dy = this.object.point.y;
-
-      let lengthY = y - dy;
-      let lengthX = x - dx;
-      let resultingLength =
-        Math.max(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
+      // console.log(cornerX, cornerY);
+      const lengthY = y - dy;
+      const lengthX = x - dx;
+      const resultingLength =
+        Math.min(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
           ? lengthY
           : lengthX;
 
-      // If lengthX < 0, then in Quadran 2 and 3
-      // If lengthY < 0, then in Quadran 3 and 4
-      if (lengthX < 0) {
-        this.object.negX = true;
-        lengthX = Math.abs(lengthX);
-      } else {
-        this.object.negX = false;
-      }
-      if (lengthY < 0) {
-        this.object.negY = true;
-        lengthY = Math.abs(lengthY);
-      } else {
-        this.object.negY = false;
-      }
-      this.object.length = resultingLength;
-      // this.object.height = resultingLength * (lengthY > 0 ? 1 : -1);
+      this.object.width = resultingLength * (lengthX > 0 ? 1 : -1);
+      this.object.height = resultingLength * (lengthY > 0 ? 1 : -1);
       this.object.resetPointsCache();
-    } else if (this.object instanceof Rectangle) {
+    } else if (
+      this.object instanceof Rectangle &&
+      this.app.toolbars.activeToolbar === "rectangle"
+    ) {
       let dx = this.object.point.x;
       let dy = this.object.point.y;
 

@@ -150,9 +150,7 @@ export class Application {
   public getFirstSelected(mousePosition: Point) {
     for (let i = this.objects.length - 1; i >= 0; i--) {
       const position = { ...mousePosition };
-      console.log(position);
       this.objects[i].rotatePoint(position);
-      console.log(position);
       if (this.objects[i].isSelected(mousePosition)) {
         return { selected: this.objects[i], index: i };
       }

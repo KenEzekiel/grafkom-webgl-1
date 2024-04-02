@@ -1,6 +1,5 @@
 import { Application } from "../application";
 import { Drawable } from "../lib/drawable/base";
-import { Polygon } from "../lib/drawable/polygon";
 import { Color, Point } from "../lib/primitives";
 import { Slider } from "../lib/slider";
 import { BaseAppState } from "./base";
@@ -8,7 +7,6 @@ import { IdleState } from "./idle";
 
 export class SelectShapeState extends BaseAppState {
   public selectObj: Drawable;
-  public selectedPoint: Point | undefined;
   public beforeSelectedLoc = { x: 0, y: 0 };
   public selectedMouseLoc = { x: 0, y: 0 };
   private rotationSlider = new Slider("rotation-slider");
@@ -61,20 +59,19 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onMouseMove(point: Point): void {
-    const newSelectedPoint = {
-      x: this.beforeSelectedLoc.x + (point.x - this.selectedMouseLoc.x),
-      y: this.beforeSelectedLoc.y + (point.y - this.selectedMouseLoc.y),
-    };
-    if (this.selectedPoint && this.selectObj instanceof Polygon) {
-      this.selectedPoint.x = newSelectedPoint.x;
-      this.selectedPoint.y = newSelectedPoint.y;
-      this.selectObj.updateLocalPoints();
-      this.app.draw();
+    if (!this.selectObj.selectedVertex) {
+      return;
     }
+    const translation = {
+      x: point.x - this.selectedMouseLoc.x,
+      y: point.y - this.selectedMouseLoc.y,
+    };
+    this.selectObj.translateVertex(translation, this.beforeSelectedLoc);
+    this.app.draw();
   }
 
   onMouseUp(point: Point) {
-    if (!this.selectedPoint) {
+    if (!this.selectObj.selectedVertex) {
       const { selected, index } = this.app.getFirstSelected(point);
       if (!selected) {
         this.app.changeState(new IdleState(this.app));
@@ -83,14 +80,16 @@ export class SelectShapeState extends BaseAppState {
       if (selected && this.selectObj !== selected) {
         this.app.changeState(new SelectShapeState(this.app, index));
       }
+    } else {
+      this.selectObj.deselectVertex();
     }
-    this.selectedPoint = undefined;
   }
 
   onMouseDown(point: Point) {
-    const { selected } = this.selectObj.getSelectedPoint(point);
+    const { selected, index } = this.selectObj.getSelectedPoint(point);
     if (selected) {
-      this.selectedPoint = selected;
+      this.selectObj.selectVertex(selected, index);
+      this.selectObj.selectedVertex = selected;
       this.beforeSelectedLoc = { ...selected };
       this.selectedMouseLoc = { ...point };
     }

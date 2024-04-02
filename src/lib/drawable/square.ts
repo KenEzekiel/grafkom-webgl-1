@@ -77,4 +77,20 @@ export class Square extends Drawable {
     }
     return [x1, y1, x1, y2, x2, y1, x1, y2, x2, y2, x2, y1];
   }
+
+  translateVertex(translation: Point, beforeLoc: Point): void {
+    switch (this.selectedVertexIdx) {
+      case 0:
+        break;
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      default:
+        return;
+    }
+    this.resetPointsCache();
+  }
 }

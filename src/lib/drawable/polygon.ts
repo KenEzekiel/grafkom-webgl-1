@@ -121,4 +121,13 @@ export class Polygon extends Drawable {
   private asLine(): Line {
     return new Line([this.points[0], this.points[1]], this.color, this.program);
   }
+
+  translateVertex(translation: Point, beforeLoc: Point): void {
+    if (!this.selectedVertex) {
+      return;
+    }
+    this.selectedVertex.x = beforeLoc.x + translation.x;
+    this.selectedVertex.y = beforeLoc.y + translation.y;
+    this.updateLocalPoints();
+  }
 }
