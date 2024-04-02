@@ -1,5 +1,10 @@
 import { ApplicationProgram } from "../../application";
-import { Color, Point, translatePoint } from "../primitives";
+import {
+  Color,
+  Point,
+  isPointInsideVertexes,
+  translatePoint,
+} from "../primitives";
 import { Drawable } from "./base";
 
 export class Rectangle extends Drawable {
@@ -19,12 +24,15 @@ export class Rectangle extends Drawable {
   // public selectedVertexIdx = -1;
 
   _getPoints(): Point[] {
-    return [
-      this.point,
+    const points = [
+      { ...this.point },
       { x: this.point.x + this.width, y: this.point.y },
-      { x: this.point.x, y: this.point.y + this.height },
       { x: this.point.x + this.width, y: this.point.y + this.height },
+      { x: this.point.x, y: this.point.y + this.height },
     ];
+    this.rotatePoints(points, this.localRotatedDegree);
+
+    return points;
   }
 
   public getPoints(): Point[] {
@@ -60,14 +68,7 @@ export class Rectangle extends Drawable {
     }
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
-      new Float32Array(
-        this.calculateRectangle(
-          this.point.x,
-          this.point.y,
-          this.width,
-          this.height
-        )
-      ),
+      new Float32Array(this.calculateRectangle()),
       this.program.gl.STATIC_DRAW
     );
     this.prepare();
@@ -75,24 +76,30 @@ export class Rectangle extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    const { x: mouseX, y: mouseY } = mousePosition;
-    const withinX =
-      mouseX >= this.point.x && mouseX <= this.point.x + this.width;
-    const withinY =
-      mouseY >= this.point.y && mouseY <= this.point.y + this.height;
-
-    return withinX && withinY;
+    console.log(mousePosition);
+    console.log(this.getPoints());
+    return isPointInsideVertexes(mousePosition, this.getPoints());
   }
 
-  calculateRectangle(x: number, y: number, width: number, height: number) {
-    var x1 = x;
-    var x2 = x + width;
-    var y1 = y;
-    var y2 = y + height;
-    return [x1, y1, x1, y2, x2, y1, x1, y2, x2, y2, x2, y1];
+  calculateRectangle() {
+    const points = this.getPoints();
+    return [
+      points[0].x,
+      points[0].y,
+      points[1].x,
+      points[1].y,
+      points[3].x,
+      points[3].y,
+      points[3].x,
+      points[3].y,
+      points[1].x,
+      points[1].y,
+      points[2].x,
+      points[2].y,
+    ];
   }
 
-  translateVertex(translation: Point) {
+  translateVertex(translation: Point, _beforeLoc: Point) {
     if (this.selectedVertexIdx === -1) {
       return;
     }
@@ -137,6 +144,7 @@ export class Rectangle extends Drawable {
       this.color,
       this.program
     );
+    this.tempRect.localRotatedDegree = this.localRotatedDegree;
   }
 
   adjustNegativeDimension() {
@@ -163,4 +171,6 @@ export class Rectangle extends Drawable {
     this.adjustNegativeDimension();
     super.deselectVertex();
   }
+
+  runLocalRotation(): void {}
 }

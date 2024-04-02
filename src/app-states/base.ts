@@ -13,4 +13,6 @@ export abstract class BaseAppState {
   onMouseUp(_point: Point) {}
 
   onBeforeChange() {}
+
+  onKeyDown(_e: KeyboardEvent) {}
 }

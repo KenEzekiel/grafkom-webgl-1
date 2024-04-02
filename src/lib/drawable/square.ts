@@ -1,5 +1,10 @@
 import { ApplicationProgram } from "../../application";
-import { Color, Point, translatePoint } from "../primitives";
+import {
+  Color,
+  Point,
+  isPointInsideVertexes,
+  translatePoint,
+} from "../primitives";
 import { Drawable } from "./base";
 
 export class Square extends Drawable {
@@ -27,13 +32,7 @@ export class Square extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    const { x: mouseX, y: mouseY } = mousePosition;
-    const withinX =
-      mouseX >= this.point.x && mouseX <= this.point.x + this.length;
-    const withinY =
-      mouseY >= this.point.y && mouseY <= this.point.y + this.length;
-
-    return withinX && withinY;
+    return isPointInsideVertexes(mousePosition, this.getPoints());
   }
 
   getRotationPoint(): Point {
@@ -93,4 +92,6 @@ export class Square extends Drawable {
     }
     this.resetPointsCache();
   }
+
+  runLocalRotation(): void {}
 }

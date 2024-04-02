@@ -69,4 +69,8 @@ export class Line extends Drawable {
     this.points[this.selectedVertexIdx].y = beforeLoc.y + translation.y;
     this.resetPointsCache();
   }
+
+  runLocalRotation(): void {
+    this.rotatePoints(this.points);
+  }
 }

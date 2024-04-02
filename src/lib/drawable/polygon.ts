@@ -130,4 +130,9 @@ export class Polygon extends Drawable {
     this.selectedVertex.y = beforeLoc.y + translation.y;
     this.updateLocalPoints();
   }
+
+  runLocalRotation(): void {
+    this.rotatePoints(this.points);
+    this.updateLocalPoints();
+  }
 }

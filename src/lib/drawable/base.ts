@@ -3,6 +3,7 @@ import { Color, Point, Size, Vec2, rotatePoint } from "../primitives";
 export abstract class Drawable {
   protected rotation: Vec2 = [0, 1];
   protected rotationDegree: number = 0;
+  public localRotatedDegree: number = 0;
   public selectedVertex: Point | undefined;
   public selectedVertexIdx = -1;
 
@@ -17,6 +18,8 @@ export abstract class Drawable {
   abstract isSelected(mousePosition: Point): boolean;
 
   abstract translate(translation: Point): void;
+
+  abstract runLocalRotation(): void;
 
   protected abstract _getPoints(): Point[];
 
@@ -36,11 +39,16 @@ export abstract class Drawable {
   }
 
   setRotation(degree: number) {
-    this.rotationDegree = degree;
+    const degreeDiff = degree - this.localRotatedDegree;
+    this.rotationDegree = degreeDiff;
     this.rotation = [
-      Math.sin((degree * 2 * Math.PI) / 360),
-      Math.cos((degree * 2 * Math.PI) / 360),
+      Math.sin((degreeDiff * 2 * Math.PI) / 360),
+      Math.cos((degreeDiff * 2 * Math.PI) / 360),
     ];
+    this.runLocalRotation();
+    this.resetPointsCache();
+    this.localRotatedDegree = degree;
+    this.rotation = [0, 1];
   }
 
   getRelativePosition(canvasSize: Size): Point {
@@ -63,10 +71,25 @@ export abstract class Drawable {
     rotatePoint(point, this.rotation, this.getRotationPoint());
   }
 
-  rotatePoints(points: Point[]) {
-    points.forEach((point) => {
-      this.rotatePoint(point);
-    });
+  rotatePoints(points: Point[], degree?: number) {
+    if (degree === undefined) {
+      const rotationPoint = { ...this.getRotationPoint() };
+      points.forEach((point) => {
+        rotatePoint(point, this.rotation, rotationPoint);
+      });
+    } else {
+      const rotationPoint = { ...this.getRotationPoint() };
+      points.forEach((point) => {
+        rotatePoint(
+          point,
+          [
+            Math.sin((degree * 2 * Math.PI) / 360),
+            Math.cos((degree * 2 * Math.PI) / 360),
+          ],
+          rotationPoint
+        );
+      });
+    }
   }
 
   prepare() {

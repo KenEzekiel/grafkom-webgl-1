@@ -96,6 +96,10 @@ export class Application {
         new Loader().saveJSON(this.objects, "model");
       });
 
+    document.addEventListener("keydown", (e) => {
+      this.state.onKeyDown(e);
+    });
+
     this.colorPicker.onValueChange(() => {
       if (!(this.state instanceof SelectShapeState)) {
         return;
@@ -117,6 +121,12 @@ export class Application {
 
     canvas.addEventListener("mouseup", (e) => {
       this.state.onMouseUp(this.getMousePosition(e));
+    });
+
+    this.toolbars.setOnActive((tool) => {
+      if (this.state instanceof SelectShapeState && tool !== "select-shape") {
+        this.changeState(new IdleState(this));
+      }
     });
   }
 

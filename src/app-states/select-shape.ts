@@ -82,6 +82,13 @@ export class SelectShapeState extends BaseAppState {
   }
 
   updateSlider() {
-    this.rotationSlider.setValue(this.selectObj.getRotationDegree());
+    this.rotationSlider.setValue(this.selectObj.localRotatedDegree);
+  }
+
+  onKeyDown(e: KeyboardEvent): void {
+    if (e.key === "Delete" || e.key === "Backspace") {
+      this.app.removeObjectAt(this.selectIdx);
+      this.app.changeState(new IdleState(this.app));
+    }
   }
 }
