@@ -76,8 +76,6 @@ export class Rectangle extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    console.log(mousePosition);
-    console.log(this.getPoints());
     return isPointInsideVertexes(mousePosition, this.getPoints());
   }
 

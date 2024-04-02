@@ -18,14 +18,10 @@ export class Application {
   public gl;
   public program;
   public objects: Array<Drawable> = [];
-  public toolbars = new Toolbars([
-    "line",
-    "square",
-    "rectangle",
-    "polygon",
-    "select-shape",
-    "erase",
-  ]);
+  public toolbars = new Toolbars(
+    ["line", "square", "rectangle", "polygon", "select-shape", "erase"],
+    ["l", "s", "r", "p", "v", "d"]
+  );
   public colorPicker = new ColorPicker("color-picker");
   private fileInput = new FileInput("model-input");
 

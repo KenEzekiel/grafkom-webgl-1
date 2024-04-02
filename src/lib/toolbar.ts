@@ -7,15 +7,22 @@ class Toolbar<T extends string> {
 
   static enableChange = true;
 
-  constructor(public name: T) {
+  constructor(public name: T, shortcut?: string) {
     this.button = toolbarContainer.querySelector("." + name)!;
-    this.button.addEventListener("click", () => {
+    const onSelect = () => {
       if (!Toolbar.enableChange) {
         return;
       }
       this.toggle(true);
       if (this.onActive && this.active) {
         this.onActive();
+      }
+    };
+    this.button.addEventListener("click", onSelect);
+
+    window.addEventListener("keydown", (e) => {
+      if (e.shiftKey && e.key.toLowerCase() === shortcut) {
+        onSelect();
       }
     });
   }
@@ -44,10 +51,10 @@ export class Toolbars<T extends string> {
   public items: Record<T, Toolbar<T>>;
   public activeToolbar: T | null = null;
 
-  constructor(private names: T[]) {
+  constructor(private names: T[], shortcuts: (string | undefined)[]) {
     this.items = {} as Record<T, Toolbar<T>>;
-    this.names.forEach((name) => {
-      this.items[name] = new Toolbar(name);
+    this.names.forEach((name, idx) => {
+      this.items[name] = new Toolbar(name, shortcuts[idx]);
     });
 
     Object.entries<Toolbar<T>>(this.items).forEach(([_, item]) => {
