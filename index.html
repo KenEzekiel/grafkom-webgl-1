@@ -16,72 +16,84 @@
         <div
           class="p-2 toolbars grid grid-cols-[2rem_2rem] gap-2 border-b-white border-b-2"
         >
-          <button class="btn btn-sm btn-primary w-8 h-8 p-0 line">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+          <div class="tooltip tooltip-right tooltip-secondary">
+            <button class="btn btn-sm btn-primary w-8 h-8 p-0 line">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+          <div class="tooltip tooltip-right tooltip-secondary">
+            <button class="btn btn-sm btn-primary w-8 h-8 p-0 square">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+              </svg>
+            </button>
+          </div>
+          <div class="tooltip tooltip-right tooltip-secondary">
+            <button class="btn btn-sm btn-primary w-8 h-8 p-0 rectangle">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect width="20" height="12" x="2" y="6" rx="2" />
+              </svg>
+            </button>
+          </div>
+          <div class="tooltip tooltip-right tooltip-secondary">
+            <button class="btn btn-sm btn-primary w-8 h-8 p-0 polygon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill="currentColor"
+                  d="m21.87 11.5l-4.5-7.79a1 1 0 0 0-.87-.5h-9a1 1 0 0 0-.87.5l-4.5 7.79a1 1 0 0 0 0 1l4.5 7.79a1 1 0 0 0 .87.5h9a1 1 0 0 0 .87-.5l4.5-7.79a1 1 0 0 0 0-1m-6 7.29H8.08L4.15 12l3.93-6.79h7.84L19.85 12Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="tooltip tooltip-right tooltip-secondary">
+            <button
+              class="btn btn-sm btn-primary text-black w-8 h-8 p-0 select-shape"
             >
-              <path d="M18 6 6 18" />
-            </svg>
-          </button>
-          <button class="btn btn-sm btn-primary w-8 h-8 p-0 square">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-            </svg>
-          </button>
-          <button class="btn btn-sm btn-primary w-8 h-8 p-0 rectangle">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <rect width="20" height="12" x="2" y="6" rx="2" />
-            </svg>
-          </button>
-          <button class="btn btn-sm btn-primary w-8 h-8 p-0 polygon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-            >
-              <path
-                fill="currentColor"
-                d="m21.87 11.5l-4.5-7.79a1 1 0 0 0-.87-.5h-9a1 1 0 0 0-.87.5l-4.5 7.79a1 1 0 0 0 0 1l4.5 7.79a1 1 0 0 0 .87.5h9a1 1 0 0 0 .87-.5l4.5-7.79a1 1 0 0 0 0-1m-6 7.29H8.08L4.15 12l3.93-6.79h7.84L19.85 12Z"
-              />
-            </svg>
-          </button>
-          <button
-            class="btn btn-sm btn-primary text-black w-8 h-8 p-0 select-shape"
-          >
-            <i class="fa-solid fa-arrow-pointer"></i>
-          </button>
-          <button class="btn btn-sm btn-primary text-black w-8 h-8 p-0 erase">
-            <i class="fa-solid fa-eraser"></i>
-          </button>
+              <i class="fa-solid fa-arrow-pointer"></i>
+            </button>
+          </div>
+          <div class="tooltip tooltip-right tooltip-secondary">
+            <button class="btn btn-sm btn-primary text-black w-8 h-8 p-0 erase">
+              <i class="fa-solid fa-eraser"></i>
+            </button>
+          </div>
         </div>
         <div class="flex flex-col items-center justify-start gap-4">
           <input
@@ -98,9 +110,8 @@
                 min="0"
                 max="360"
                 value="0"
-                class="slider"
+                class="slider vertical"
                 id="rotation-slider"
-                orient="vertical"
               />
             </div>
           </div>

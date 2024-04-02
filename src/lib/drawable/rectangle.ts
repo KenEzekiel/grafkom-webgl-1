@@ -119,13 +119,13 @@ export class Rectangle extends Drawable {
         width = this.width + translation.x;
         height = this.height - translation.y;
         break;
-      case 2:
+      case 3:
         point.x = this.point.x + translation.x;
         point.y = this.point.y;
         width = this.width - translation.x;
         height = this.height + translation.y;
         break;
-      case 3:
+      case 2:
         point.x = this.point.x;
         point.y = this.point.y;
         width = this.width + translation.x;

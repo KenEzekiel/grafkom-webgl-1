@@ -19,6 +19,12 @@ class Toolbar<T extends string> {
       }
     };
     this.button.addEventListener("click", onSelect);
+    if (shortcut) {
+      this.button.parentElement?.setAttribute(
+        "data-tip",
+        `Shift + ${shortcut.toUpperCase()}`
+      );
+    }
 
     window.addEventListener("keydown", (e) => {
       if (e.shiftKey && e.key.toLowerCase() === shortcut) {

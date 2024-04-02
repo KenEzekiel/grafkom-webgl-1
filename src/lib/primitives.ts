@@ -60,3 +60,10 @@ export function isPointInsideVertexes(
   }
   return inside;
 }
+
+export function degreeToVec2(degree: number): Vec2 {
+  return [
+    Math.sin((degree * 2 * Math.PI) / 360),
+    Math.cos((degree * 2 * Math.PI) / 360),
+  ];
+}
