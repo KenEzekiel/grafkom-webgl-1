@@ -4,8 +4,10 @@ import { Drawable } from "./base";
 
 export class Square extends Drawable {
   public type = "square";
+  public negX = false;
+  public negY = false;
   constructor(
-    public points: Point,
+    public point: Point,
     public length: number,
     color: Color,
     application: ApplicationProgram
@@ -14,33 +16,35 @@ export class Square extends Drawable {
   }
 
   _getPoints(): Point[] {
+    let dx = this.length * (this.negX ? -1 : 1);
+    let dy = this.length * (this.negY ? -1 : 1);
     return [
-      this.points,
-      { x: this.points.x + this.length, y: this.points.y },
-      { x: this.points.x, y: this.points.y + this.length },
-      { x: this.points.x + this.length, y: this.points.y + this.length },
+      this.point,
+      { x: this.point.x + dx, y: this.point.y },
+      { x: this.point.x, y: this.point.y + dy },
+      { x: this.point.x + dx, y: this.point.y + dy },
     ];
   }
 
   isSelected(mousePosition: Point): boolean {
     const { x: mouseX, y: mouseY } = mousePosition;
     const withinX =
-      mouseX >= this.points.x && mouseX <= this.points.x + this.length;
+      mouseX >= this.point.x && mouseX <= this.point.x + this.length;
     const withinY =
-      mouseY >= this.points.y && mouseY <= this.points.y + this.length;
+      mouseY >= this.point.y && mouseY <= this.point.y + this.length;
 
     return withinX && withinY;
   }
 
   getRotationPoint(): Point {
     return {
-      x: this.points.x + this.length / 2,
-      y: this.points.y + this.length / 2,
+      x: this.point.x + this.length / 2,
+      y: this.point.y + this.length / 2,
     };
   }
 
   translate(translation: Point): void {
-    translatePoint(this.points, translation);
+    translatePoint(this.point, translation);
     this.resetPointsCache();
   }
 
@@ -48,18 +52,29 @@ export class Square extends Drawable {
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array(
-        this.calculateSquare(this.points.x, this.points.y, this.length)
+        this.calculateSquare(this.point.x, this.point.y, this.length)
       ),
       this.program.gl.STATIC_DRAW
     );
     this.prepare();
+    this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }
 
   calculateSquare(x: number, y: number, length: number) {
     var x1 = x;
-    var x2 = x + length;
+    var x2 = x + length * (this.negX ? -1 : 1);
     var y1 = y;
-    var y2 = y + length;
-    return [x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2];
+    var y2 = y + length * (this.negY ? -1 : 1);
+
+    if (this.negX && !this.negY) {
+      return [x2, y1, x2, y2, x1, y1, x1, y1, x2, y2, x1, y2];
+    }
+    if (this.negX && this.negY) {
+      return [x2, y2, x2, y1, x1, y2, x1, y2, x2, y1, x1, y1];
+    }
+    if (!this.negX && this.negY) {
+      return [x1, y2, x1, y1, x2, y2, x2, y2, x1, y1, x2, y1];
+    }
+    return [x1, y1, x1, y2, x2, y1, x1, y2, x2, y2, x2, y1];
   }
 }

@@ -2,6 +2,7 @@ import { Application } from "../application";
 import { Line } from "../lib/drawable/line";
 import { Polygon } from "../lib/drawable/polygon";
 import { Rectangle } from "../lib/drawable/rectangle";
+import { Square } from "../lib/drawable/square";
 import { Point } from "../lib/primitives";
 import { BaseAppState } from "./base";
 import { DrawingState } from "./drawing";
@@ -47,9 +48,8 @@ export class IdleState extends BaseAppState {
         this.app.changeState(
           new DrawingState(
             this.app,
-            new Rectangle(
+            new Square(
               point,
-              0,
               0,
               this.app.colorPicker.getColor(),
               this.app.program
