@@ -6,7 +6,6 @@ import { Square } from "../lib/drawable/square";
 import { Point } from "../lib/primitives";
 import { BaseAppState } from "./base";
 import { DrawingState } from "./drawing";
-import { EraseState } from "./erase";
 import { SelectShapeState } from "./select-shape";
 
 export class IdleState extends BaseAppState {
@@ -24,7 +23,9 @@ export class IdleState extends BaseAppState {
       return;
     } else if (this.app.toolbars.activeToolbar === "erase") {
       const { index } = this.app.getFirstSelected(point);
-      this.app.changeState(new EraseState(this.app, index));
+      this.app.removeObjectAt(index);
+      this.app.draw();
+      return;
     }
 
     switch (this.app.toolbars.activeToolbar) {

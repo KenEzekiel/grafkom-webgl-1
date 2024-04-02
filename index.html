@@ -4,13 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://kit.fontawesome.com/112dcdcf9d.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/112dcdcf9d.js"
+      crossorigin="anonymous"
+    ></script>
     <title>Grafkom FatihKocak</title>
   </head>
   <body class="w-full flex flex-col">
     <div class="w-full h-full flex">
       <div id="app" class="flex flex-col justify-start items-center gap-4 pb-4">
-        <div class="p-2 toolbars grid grid-cols-[2rem_2rem] gap-2 border-b-white border-b-2">
+        <div
+          class="p-2 toolbars grid grid-cols-[2rem_2rem] gap-2 border-b-white border-b-2"
+        >
           <button class="btn btn-sm btn-primary w-8 h-8 p-0 line">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -69,14 +74,22 @@
               />
             </svg>
           </button>
-          <button class="btn btn-sm btn-primary text-black w-8 h-8 p-0 select-shape">
+          <button
+            class="btn btn-sm btn-primary text-black w-8 h-8 p-0 select-shape"
+          >
             <i class="fa-solid fa-arrow-pointer"></i>
           </button>
           <button class="btn btn-sm btn-primary text-black w-8 h-8 p-0 erase">
-            <i class="fa-solid fa-eraser"></i>        </button>
+            <i class="fa-solid fa-eraser"></i>
+          </button>
         </div>
         <div class="flex flex-col items-center justify-start gap-4">
-          <input type="color" id="color-picker" name="color-picker" value="#ffffff" />
+          <input
+            type="color"
+            id="color-picker"
+            name="color-picker"
+            value="#ffffff"
+          />
           <div class="gap-4 hidden text-white" id="slider-container">
             <div class="flex flex-col items-center justify-start gap-2">
               <i class="fa-solid fa-rotate"></i>
@@ -90,50 +103,37 @@
                 orient="vertical"
               />
             </div>
-            <div class="flex flex-col items-center justify-start gap-2">
-              <i class="fa-solid fa-arrows-left-right"></i>              <input
-              type="range"
-              min="1"
-              max="100"
-              value="50"
-              class="slider"
-              id="horizontal-slider"
-              orient="vertical"
-            />  
-            </div>
-            <div class="flex flex-col items-center justify-start gap-2">
-              <i class="fa-solid fa-arrows-up-down"></i>              <input
-              type="range"
-              min="1"
-              max="100"
-              value="50"
-              class="slider"
-              id="vertical-slider"
-              orient="vertical"
-            />
-            </div>
           </div>
         </div>
         <div class="flex-grow"></div>
         <button class="text-white" id="export-button">
-          <i class="fa-solid fa-file-export"></i>      </button>
+          <i class="fa-solid fa-file-export"></i>
+        </button>
         <button class="btn-secondary text-white" id="download-button">
           <i class="fa-solid fa-download"></i>
         </button>
-  
-          <div class="input_container">
-            <button>
-              <label for="model-input" class="text-white">
-                <i class="fa-solid fa-upload"></i>
-              </label>
-            </button>
-            <input id="model-input" name="model-input" accept="application/JSON" style="display:none;" type="file">
-          </div>
-        <button class="text-white" id="clear-button">
-          <i class="fa-solid fa-trash"></i>      </button>
-        
+
+        <div class="input_container">
+          <button>
+            <label for="model-input" class="text-white">
+              <i class="fa-solid fa-upload"></i>
+            </label>
+          </button>
+          <input
+            id="model-input"
+            name="model-input"
+            accept="application/JSON"
+            style="display: none"
+            type="file"
+          />
         </div>
-        <div class="canvas-container flex w-full flex-col items-start justify-end h-full max-h-full">
+        <button class="text-white" id="clear-button">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+      <div
+        class="canvas-container flex w-full flex-col items-start justify-end h-full max-h-full"
+      >
         <canvas id="main-canvas" class=""></canvas>
       </div>
     </div>

@@ -10,8 +10,7 @@ export class SelectShapeState extends BaseAppState {
   public beforeSelectedLoc = { x: 0, y: 0 };
   public selectedMouseLoc = { x: 0, y: 0 };
   private rotationSlider = new Slider("rotation-slider");
-  private horizontalSlider = new Slider("horizontal-slider");
-  private verticalSlider = new Slider("vertical-slider");
+  private isMouseDown = false;
 
   constructor(app: Application, private selectIdx: number) {
     super(app);
@@ -24,33 +23,11 @@ export class SelectShapeState extends BaseAppState {
       this.selectObj.setRotation(value);
       this.app.draw();
     });
-
-    this.horizontalSlider.onValueChange(() => {
-      const canvasSize = this.app.getCanvasSize();
-      const relativePosition = this.selectObj.getRelativePosition(canvasSize);
-      const newX =
-        (this.horizontalSlider.getRelativeValue() - relativePosition.x) *
-        canvasSize.width;
-      this.selectObj.translate({ x: newX, y: 0 });
-      this.app.draw();
-    });
-
-    this.verticalSlider.onValueChange(() => {
-      const canvasSize = this.app.getCanvasSize();
-      const relativePosition = this.selectObj.getRelativePosition(canvasSize);
-      const newY =
-        (this.verticalSlider.getRelativeValue() - relativePosition.y) *
-        canvasSize.height;
-      this.selectObj.translate({ x: 0, y: newY });
-      this.app.draw();
-    });
   }
 
   onBeforeChange(): void {
     this.app.manageSliderVisibility(false);
     this.rotationSlider.cleanup();
-    this.horizontalSlider.cleanup();
-    this.verticalSlider.cleanup();
   }
 
   onColorPickerChange(color: Color) {
@@ -59,15 +36,22 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onMouseMove(point: Point): void {
-    if (!this.selectObj.selectedVertex) {
-      return;
+    if (this.selectObj.selectedVertex) {
+      const translation = {
+        x: point.x - this.selectedMouseLoc.x,
+        y: point.y - this.selectedMouseLoc.y,
+      };
+      this.selectObj.translateVertex(translation, this.beforeSelectedLoc);
+      this.app.draw();
+    } else if (this.isMouseDown) {
+      const translation = {
+        x: point.x - this.beforeSelectedLoc.x,
+        y: point.y - this.beforeSelectedLoc.y,
+      };
+      this.beforeSelectedLoc = { ...point };
+      this.selectObj.translate(translation);
+      this.app.draw();
     }
-    const translation = {
-      x: point.x - this.selectedMouseLoc.x,
-      y: point.y - this.selectedMouseLoc.y,
-    };
-    this.selectObj.translateVertex(translation, this.beforeSelectedLoc);
-    this.app.draw();
   }
 
   onMouseUp(point: Point) {
@@ -83,29 +67,21 @@ export class SelectShapeState extends BaseAppState {
     } else {
       this.selectObj.deselectVertex();
     }
+    this.isMouseDown = false;
   }
 
   onMouseDown(point: Point) {
     const { selected, index } = this.selectObj.getSelectedPoint(point);
+    this.beforeSelectedLoc = { ...point };
+    this.selectedMouseLoc = { ...point };
+    this.isMouseDown = true;
     if (selected) {
       this.selectObj.selectVertex(selected, index);
       this.selectObj.selectedVertex = selected;
-      this.beforeSelectedLoc = { ...selected };
-      this.selectedMouseLoc = { ...point };
     }
   }
 
   updateSlider() {
-    const relativePosition = this.selectObj.getRelativePosition(
-      this.app.getCanvasSize()
-    );
-
     this.rotationSlider.setValue(this.selectObj.getRotationDegree());
-    this.horizontalSlider.setValue(
-      relativePosition.x * this.horizontalSlider.getRange()
-    );
-    this.verticalSlider.setValue(
-      relativePosition.y * this.verticalSlider.getRange()
-    );
   }
 }
