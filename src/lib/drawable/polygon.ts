@@ -1,4 +1,4 @@
-import hull from "hull.js";
+// import hull from "hull.js";
 import { ApplicationProgram } from "../../application";
 import { Color, Point, translatePoint } from "../primitives";
 import { Drawable } from "./base";
@@ -102,17 +102,17 @@ export class Polygon extends Drawable {
     // TODO: if drawing, special treatment (because the last point will be the point that is moved around)
     // If not drawing
     console.log("before", this.points);
-    if (this.points.length > 5) this.points = convexHull(temp, temp.length);
+    if (this.points.length > 3) this.points = convexHull(temp, temp.length);
     console.log("after", this.points);
     this.updateLocalPoints();
   }
 
-  private updateConvexHullLib() {
-    this.points = hull(this.points, 50, [".x", ".y"]) as Point[];
-    this.points.pop();
-    this.points.reverse();
-    this.updateLocalPoints();
-  }
+  // private updateConvexHullLib() {
+  //   this.points = hull(this.points, 50, [".x", ".y"]) as Point[];
+  //   this.points.pop();
+  //   this.points.reverse();
+  //   this.updateLocalPoints();
+  // }
 
   updateLocalPoints() {
     this.localPoints = [];
