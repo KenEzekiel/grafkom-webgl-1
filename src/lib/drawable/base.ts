@@ -107,11 +107,11 @@ export abstract class Drawable {
     });
   }
 
-  drawPoints() {
+  drawPoints(pointsSource = this.getPoints()) {
     const rotationPoint = this.getRotationPoint();
     const points: Array<number> = [];
 
-    for (const point of this.getPoints()) {
+    for (const point of pointsSource) {
       points.push(point.x, point.y);
     }
 

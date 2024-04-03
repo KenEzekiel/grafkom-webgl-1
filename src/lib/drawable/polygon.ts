@@ -6,6 +6,7 @@ import { Line } from "./line";
 
 export class Polygon extends Drawable {
   private localPoints: Array<number> = [];
+  public nextPoint: Point | undefined;
   public type = "polygon";
 
   constructor(
@@ -122,22 +123,20 @@ export class Polygon extends Drawable {
   }
 
   finishDrawingMove(point: Point): boolean {
-    if (this.isSelected(point, this.points.length - 1)) {
-      this.deletePoint(this.points.length - 1);
+    if (this.isSelected(point)) {
+      this.nextPoint = undefined;
       return true;
     } else {
-      if (this.points.length <= 3) {
-        this.addPoint(point);
-        return false;
-      }
-      this.updateConvexHull();
       this.addPoint(point);
+      if (this.points.length > 3) {
+        this.updateConvexHull();
+      }
       return false;
     }
   }
 
   moveDrawing(point: Point): void {
-    this.updateLastPoint(point);
+    this.nextPoint = point;
   }
 
   finishDrawing(): void {
@@ -146,29 +145,31 @@ export class Polygon extends Drawable {
   }
 
   draw(): void {
-    for (let i = 0; i < this.points.length; i++) {
-      const line = new Line(
-        [this.points[i], this.points[(i + 1) % this.points.length]],
-        this.color,
-        this.program
-      );
-      line.draw();
-    }
-    if (this.points.length == 2) {
+    if (this.points.length === 1) {
+      this.drawPoints();
+    } else if (this.points.length === 2) {
       this.asLine().draw();
-      return;
+    } else {
+      this.program.gl.bufferData(
+        this.program.gl.ARRAY_BUFFER,
+        new Float32Array(this.localPoints),
+        this.program.gl.STATIC_DRAW
+      );
+      this.prepare();
+      this.program.gl.drawArrays(
+        this.program.gl.TRIANGLE_FAN,
+        0,
+        this.points.length
+      );
+      if (this.isDrawing) {
+        this.program.gl.lineWidth(5);
+        this.drawOutline([4, 240, 0]);
+      }
     }
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.localPoints),
-      this.program.gl.STATIC_DRAW
-    );
-    this.prepare();
-    this.program.gl.drawArrays(
-      this.program.gl.TRIANGLE_FAN,
-      0,
-      this.points.length
-    );
+
+    if (this.nextPoint) {
+      this.drawPoints([this.nextPoint]);
+    }
   }
 
   drawOutline(color = this.color) {
