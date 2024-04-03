@@ -103,9 +103,8 @@ export class Square extends Drawable {
     this.tempSquare.localRotatedDegree = this.localRotatedDegree;
   }
 
-  deselectVertex(): void {
+  doneTranslateVertex(): void {
     if (!this.tempSquare) {
-      super.deselectVertex();
       return;
     }
 
@@ -113,7 +112,41 @@ export class Square extends Drawable {
     this.length = this.tempSquare.length;
     this.tempSquare = undefined;
     this.resetPointsCache();
-    super.deselectVertex();
+  }
+
+  moveDrawing(point: Point): void {
+    let dx = this.point.x;
+    let dy = this.point.y;
+
+    let lengthY = point.y - dy;
+    let lengthX = point.x - dx;
+    let resultingLength =
+      Math.max(Math.abs(lengthY), Math.abs(lengthX)) === Math.abs(lengthY)
+        ? lengthY
+        : lengthX;
+
+    // If lengthX < 0, then in Quadran 2 and 3
+    // If lengthY < 0, then in Quadran 3 and 4
+    if (lengthX < 0) {
+      this.negX = true;
+      lengthX = Math.abs(lengthX);
+    } else {
+      this.negX = false;
+    }
+    if (lengthY < 0) {
+      this.negY = true;
+      lengthY = Math.abs(lengthY);
+    } else {
+      this.negY = false;
+    }
+    this.length = resultingLength;
+    // this.height = resultingLength * (lengthY > 0 ? 1 : -1);
+    this.resetPointsCache();
+  }
+
+  finishDrawingMove(point: Point): boolean {
+    this.moveDrawing(point);
+    return true;
   }
 
   runLocalRotation(): void {}

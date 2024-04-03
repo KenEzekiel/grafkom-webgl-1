@@ -6,6 +6,7 @@ export abstract class Drawable {
   public localRotatedDegree: number = 0;
   public selectedVertex: Point | undefined;
   public selectedVertexIdx = -1;
+  public isDrawing = true;
 
   public scale: number = 1;
   protected pointsCache: Point[] | undefined;
@@ -20,6 +21,10 @@ export abstract class Drawable {
   abstract translate(translation: Point): void;
 
   abstract runLocalRotation(): void;
+
+  abstract finishDrawingMove(point: Point): boolean;
+
+  abstract moveDrawing(point: Point): void;
 
   protected abstract _getPoints(): Point[];
 
@@ -92,10 +97,10 @@ export abstract class Drawable {
     }
   }
 
-  prepare() {
+  prepare(color = this.color) {
     const rotationPoint = this.getRotationPoint();
     this.program.setUniforms({
-      color: [...this.color.map((num) => num / 255), 1],
+      color: [...color.map((num) => num / 255), 1],
       rotationPoint: [rotationPoint.x, rotationPoint.y],
       rotation: this.rotation,
       scale: [this.scale],
@@ -165,5 +170,9 @@ export abstract class Drawable {
   deselectVertex() {
     this.selectedVertex = undefined;
     this.selectedVertexIdx = -1;
+  }
+
+  finishDrawing() {
+    this.isDrawing = false;
   }
 }

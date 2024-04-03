@@ -1,3 +1,4 @@
+import hull from "hull.js";
 import { ApplicationProgram } from "../../application";
 import { Color, Point, translatePoint } from "../primitives";
 import { Drawable } from "./base";
@@ -102,11 +103,14 @@ export class Polygon extends Drawable {
     console.log("before", this.points);
     if (this.points.length > 5) this.points = convexHull(temp, temp.length);
     console.log("after", this.points);
-    this.localPoints = [];
-    this.points.forEach((point) => {
-      this.localPoints.push(point.x, point.y);
-    });
-    this.resetPointsCache();
+    this.updateLocalPoints();
+  }
+
+  private updateConvexHullLib() {
+    this.points = hull(this.points, 50, [".x", ".y"]) as Point[];
+    this.points.pop();
+    this.points.reverse();
+    this.updateLocalPoints();
   }
 
   updateLocalPoints() {
@@ -117,7 +121,39 @@ export class Polygon extends Drawable {
     this.resetPointsCache();
   }
 
+  finishDrawingMove(point: Point): boolean {
+    if (this.isSelected(point, this.points.length - 1)) {
+      this.deletePoint(this.points.length - 1);
+      return true;
+    } else {
+      if (this.points.length <= 3) {
+        this.addPoint(point);
+        return false;
+      }
+      this.updateConvexHull();
+      this.addPoint(point);
+      return false;
+    }
+  }
+
+  moveDrawing(point: Point): void {
+    this.updateLastPoint(point);
+  }
+
+  finishDrawing(): void {
+    super.finishDrawing();
+    this.updateConvexHull();
+  }
+
   draw(): void {
+    for (let i = 0; i < this.points.length; i++) {
+      const line = new Line(
+        [this.points[i], this.points[(i + 1) % this.points.length]],
+        this.color,
+        this.program
+      );
+      line.draw();
+    }
     if (this.points.length == 2) {
       this.asLine().draw();
       return;
@@ -135,6 +171,28 @@ export class Polygon extends Drawable {
     );
   }
 
+  drawOutline(color = this.color) {
+    const lines: number[] = [];
+    for (let i = 0; i < this.points.length; i++) {
+      lines.push(this.points[i].x, this.points[i].y);
+      lines.push(
+        this.points[(i + 1) % this.points.length].x,
+        this.points[(i + 1) % this.points.length].y
+      );
+    }
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(lines),
+      this.program.gl.STATIC_DRAW
+    );
+    this.prepare(color);
+    this.program.gl.drawArrays(
+      this.program.gl.LINES,
+      0,
+      this.points.length * 2
+    );
+  }
+
   private asLine(): Line {
     return new Line([this.points[0], this.points[1]], this.color, this.program);
   }
@@ -146,6 +204,10 @@ export class Polygon extends Drawable {
     this.selectedVertex.x = beforeLoc.x + translation.x;
     this.selectedVertex.y = beforeLoc.y + translation.y;
     this.updateLocalPoints();
+  }
+
+  doneTranslateVertex(): void {
+    this.updateConvexHull();
   }
 
   runLocalRotation(): void {
@@ -313,7 +375,7 @@ function convexHull(points: Point[], n: number): Point[] {
   while (S.length > 0) {
     let p = S[S.length - 1];
     console.log("(" + p.x + ", " + p.y + ")");
-    ret.push(S.pop());
+    ret.push(S.pop()!);
   }
   return ret;
 }

@@ -8,11 +8,17 @@ dependencies:
   file-saver:
     specifier: ^2.0.5
     version: 2.0.5
+  hull.js:
+    specifier: ^1.0.5
+    version: 1.0.5
 
 devDependencies:
   '@types/file-saver':
     specifier: ^2.0.7
     version: 2.0.7
+  '@types/hull.js':
+    specifier: ^1.0.4
+    version: 1.0.4
   autoprefixer:
     specifier: ^10.4.19
     version: 10.4.19(postcss@8.4.38)
@@ -567,6 +573,10 @@ packages:
     resolution: {integrity: sha512-dNKVfHd/jk0SkR/exKGj2ggkB45MAkzvWCaqLUUgkyjITkGNzH8H+yUwr+BLJUBjZOe9w8X3wgmXhZDRg1ED6A==}
     dev: true
 
+  /@types/hull.js@1.0.4:
+    resolution: {integrity: sha512-4eMDYQSFROPgbExE7btF37tCeXnGrMEPo0S2Ul00XIgWnxTLZGlJTSme42phtNpIBKVgbD/U1DWzVnMBhB9tUQ==}
+    dev: true
+
   /ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
@@ -881,6 +891,10 @@ packages:
     dependencies:
       function-bind: 1.1.2
     dev: true
+
+  /hull.js@1.0.5:
+    resolution: {integrity: sha512-Fm7zZomuKRhboSZEvvLU8jY0Byb/DC84Z5E4LUC8xH7m9ODpsDNtYqU+Wf049ThxrwjNvvq2f4Mz9eY2UTE6rg==}
+    dev: false
 
   /is-binary-path@2.1.0:
     resolution: {integrity: sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==}

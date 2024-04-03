@@ -70,6 +70,16 @@ export class Line extends Drawable {
     this.resetPointsCache();
   }
 
+  moveDrawing(point: Point): void {
+    this.points[1] = point;
+    this.resetPointsCache();
+  }
+
+  finishDrawingMove(point: Point): boolean {
+    this.moveDrawing(point);
+    return true;
+  }
+
   runLocalRotation(): void {
     this.rotatePoints(this.points);
   }

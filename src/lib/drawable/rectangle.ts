@@ -157,9 +157,8 @@ export class Rectangle extends Drawable {
     this.resetPointsCache();
   }
 
-  deselectVertex() {
+  doneTranslateVertex() {
     if (!this.tempRect) {
-      super.deselectVertex();
       return;
     }
     this.point = this.tempRect.point;
@@ -167,7 +166,24 @@ export class Rectangle extends Drawable {
     this.height = this.tempRect.height;
     this.tempRect = undefined;
     this.adjustNegativeDimension();
-    super.deselectVertex();
+  }
+
+  moveDrawing(point: Point): void {
+    let dx = this.point.x;
+    let dy = this.point.y;
+
+    let width = point.x - dx;
+    let height = point.y - dy;
+
+    this.width = width;
+    this.height = height;
+    this.resetPointsCache();
+  }
+
+  finishDrawingMove(point: Point): boolean {
+    this.moveDrawing(point);
+    this.adjustNegativeDimension();
+    return true;
   }
 
   runLocalRotation(): void {}

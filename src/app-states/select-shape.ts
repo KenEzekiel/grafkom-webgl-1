@@ -11,6 +11,7 @@ export class SelectShapeState extends BaseAppState {
   public selectedMouseLoc = { x: 0, y: 0 };
   private rotationSlider = new Slider("rotation-slider");
   private isMouseDown = false;
+  private isMoved = false;
 
   constructor(app: Application, private selectIdx: number) {
     super(app);
@@ -52,6 +53,7 @@ export class SelectShapeState extends BaseAppState {
       this.selectObj.translate(translation);
       this.app.draw();
     }
+    this.isMoved = true;
   }
 
   onMouseUp(point: Point) {
@@ -61,12 +63,15 @@ export class SelectShapeState extends BaseAppState {
         this.app.changeState(new IdleState(this.app));
         return;
       }
-      if (selected && this.selectObj !== selected) {
+      if (!this.isMoved && selected && this.selectObj !== selected) {
         this.app.changeState(new SelectShapeState(this.app, index));
       }
     } else {
+      this.selectObj.doneTranslateVertex();
       this.selectObj.deselectVertex();
+      this.app.draw();
     }
+    this.isMoved = false;
     this.isMouseDown = false;
   }
 
@@ -75,9 +80,9 @@ export class SelectShapeState extends BaseAppState {
     this.beforeSelectedLoc = { ...point };
     this.selectedMouseLoc = { ...point };
     this.isMouseDown = true;
+    this.isMoved = false;
     if (selected) {
       this.selectObj.selectVertex(selected, index);
-      this.selectObj.selectedVertex = selected;
     }
   }
 
