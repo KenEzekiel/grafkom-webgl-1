@@ -92,15 +92,24 @@ export class Polygon extends Drawable {
     this.updateLocalPoints();
   }
 
-  updateLocalPoints() {
+  updateConvexHull() {
     let temp: Point[] = [];
     this.points.forEach((point) => {
       temp.push(point);
     });
+    // TODO: if drawing, special treatment (because the last point will be the point that is moved around)
+    // If not drawing
     console.log("before", this.points);
-    if (this.points.length > 6) this.points = convexHull(temp, temp.length);
+    if (this.points.length > 5) this.points = convexHull(temp, temp.length);
     console.log("after", this.points);
+    this.localPoints = [];
+    this.points.forEach((point) => {
+      this.localPoints.push(point.x, point.y);
+    });
+    this.resetPointsCache();
+  }
 
+  updateLocalPoints() {
     this.localPoints = [];
     this.points.forEach((point) => {
       this.localPoints.push(point.x, point.y);

@@ -31,6 +31,7 @@ export class DrawingState extends BaseAppState {
     if (this.object instanceof Polygon) {
       if (this.object.isSelected(point, this.object.points.length - 1)) {
         this.object.deletePoint(this.object.points.length - 1);
+        this.object.updateConvexHull();
         this.app.changeState(new IdleState(this.app));
       } else {
         this.object.addPoint(point);
