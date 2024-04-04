@@ -186,6 +186,7 @@ export class Application {
   public changeState(newState: BaseAppState) {
     this.state.onBeforeChange();
     this.state = newState;
+    this.state.onAfterChange();
     this.draw();
   }
 

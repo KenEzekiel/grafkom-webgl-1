@@ -14,6 +14,8 @@ export abstract class BaseAppState {
 
   onBeforeChange() {}
 
+  onAfterChange() {}
+
   onKeyDown(_e: KeyboardEvent) {}
 
   onDoubleClick(_point: Point) {}

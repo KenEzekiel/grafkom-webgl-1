@@ -16,7 +16,6 @@ export class SelectShapeState extends BaseAppState {
 
   constructor(app: Application, private selectIdx: number) {
     super(app);
-    app.manageSliderVisibility(true);
     this.selectObj = this.app.objects[this.selectIdx];
     this.app.colorPicker.setColor(this.selectObj.color);
     this.updateSlider();
@@ -30,6 +29,10 @@ export class SelectShapeState extends BaseAppState {
   onBeforeChange(): void {
     this.app.manageSliderVisibility(false);
     this.rotationSlider.cleanup();
+  }
+
+  onAfterChange(): void {
+    this.app.manageSliderVisibility(true);
   }
 
   onColorPickerChange(color: Color) {
@@ -64,6 +67,7 @@ export class SelectShapeState extends BaseAppState {
         this.app.changeState(new IdleState(this.app));
         return;
       }
+      console.log(this.isMoved, selected, this.selectObj);
       if (!this.isMoved && selected && this.selectObj !== selected) {
         this.app.changeState(new SelectShapeState(this.app, index));
       }
