@@ -56,12 +56,15 @@ export class Polygon extends Drawable {
   }
 
   deletePoint(index: number) {
+    if (this.points.length < 4) {
+      return;
+    }
     if (index > this.points.length - 1) {
       throw new Error("Out of bound!");
     }
 
     this.points.splice(index, 1);
-    this.updateLocalPoints();
+    this.updateConvexHull();
   }
 
   changePoint(point: Point, toPoint: Point) {
@@ -71,7 +74,7 @@ export class Polygon extends Drawable {
     }
     point.x = toPoint.x;
     point.y = toPoint.y;
-    this.updateLocalPoints();
+    this.updateConvexHull();
   }
 
   translate(translation: Point): void {

@@ -1,5 +1,6 @@
 import { Application } from "../application";
 import { Drawable } from "../lib/drawable/base";
+import { Polygon } from "../lib/drawable/polygon";
 import { Color, Point } from "../lib/primitives";
 import { Slider } from "../lib/slider";
 import { BaseAppState } from "./base";
@@ -94,6 +95,21 @@ export class SelectShapeState extends BaseAppState {
     if (e.key === "Delete" || e.key === "Backspace") {
       this.app.removeObjectAt(this.selectIdx);
       this.app.changeState(new IdleState(this.app));
+    }
+  }
+
+  onDoubleClick(point: Point): void {
+    const { selected, index } = this.selectObj.getSelectedPoint(point);
+    if (this.selectObj instanceof Polygon) {
+      if (selected) {
+        this.selectObj.deletePoint(index);
+      } else {
+        if (this.selectObj.isSelected(point)) {
+          this.selectObj.addPoint(point);
+          this.onMouseDown({ ...point });
+        }
+      }
+      this.app.draw();
     }
   }
 }

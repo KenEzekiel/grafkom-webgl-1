@@ -119,6 +119,10 @@ export class Application {
       this.state.onMouseUp(this.getMousePosition(e));
     });
 
+    canvas.addEventListener("dblclick", (e) => {
+      this.state.onDoubleClick(this.getMousePosition(e));
+    });
+
     this.toolbars.setOnActive((tool) => {
       if (this.state instanceof SelectShapeState && tool !== "select-shape") {
         this.changeState(new IdleState(this));
