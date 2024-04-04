@@ -374,7 +374,6 @@ function convexHull(points: Point[], n: number): Point[] {
   let ret: Point[] = [];
   while (S.length > 0) {
     let p = S[S.length - 1];
-    console.log("(" + p.x + ", " + p.y + ")");
     ret.push(S.pop()!);
   }
   return ret;

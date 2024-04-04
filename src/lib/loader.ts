@@ -8,6 +8,8 @@ import { Rectangle } from "./drawable/rectangle";
 import { Polygon } from "./drawable/polygon";
 
 export class Loader {
+  constructor(private program: ApplicationProgram) {}
+
   getJSON(drawables: Array<Drawable>) {
     return JSON.stringify(drawables);
   }
@@ -19,7 +21,13 @@ export class Loader {
     FileSaver.saveAs(file);
   }
 
-  readJSON(file: File, program: ApplicationProgram) {
+  readJSON(contents: string) {
+    return JSON.parse(contents).map((drawableJSON: any) =>
+      createDrawableFromJson(drawableJSON, this.program)
+    );
+  }
+
+  readJSONFile(file: File, program: ApplicationProgram) {
     const reader = new FileReader();
 
     return new Promise<Drawable[]>((resolve) => {

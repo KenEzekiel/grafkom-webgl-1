@@ -11,6 +11,7 @@ import { Program } from "./lib/program";
 import { Toolbars } from "./lib/toolbar";
 import fragmentShaderSource from "./shaders/fragment-shader-2d.glsl";
 import vertexShaderSource from "./shaders/vector-shader-2d.glsl";
+import { SavedIndicator } from "./lib/saved-indicator";
 
 export type ApplicationProgram = Application["program"];
 
@@ -33,9 +34,10 @@ export class Application {
   );
   public colorPicker = new ColorPicker("color-picker");
   private fileInput = new FileInput("model-input");
+  private savedIndicator = new SavedIndicator("saved-indicator-icon");
 
   private state: BaseAppState;
-  private loader: Loader = new Loader();
+  private loader: Loader;
 
   constructor(public canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -77,7 +79,11 @@ export class Application {
     });
     this.program.setUniforms({ resolution: [canvas.width, canvas.height] });
 
+    this.loader = new Loader(this.program);
+
     this.state = new IdleState(this);
+
+    this.readFromLocalStorage();
 
     // Implement clear button
     document.querySelector("#clear-button")!.addEventListener("click", () => {
@@ -97,7 +103,7 @@ export class Application {
       if (!modelFile) {
         return;
       }
-      const result = await this.loader.readJSON(modelFile, this.program);
+      const result = await this.loader.readJSONFile(modelFile, this.program);
       this.objects = result;
       this.draw();
       this.fileInput.clear();
@@ -170,6 +176,8 @@ export class Application {
     if (this.state instanceof SelectShapeState) {
       this.state.selectObj.drawPoints();
     }
+
+    this.debounce(() => this.saveToLocalStorage(), 2000)();
   }
 
   public getLastObject() {
@@ -235,6 +243,25 @@ export class Application {
     }, "image/jpeg");
   }
 
+  private async saveToLocalStorage() {
+    return new Promise<void>((resolve) => {
+      this.savedIndicator.toggle(false);
+      localStorage.setItem("objects", JSON.stringify(this.objects));
+      this.savedIndicator.toggle(true);
+      resolve();
+    });
+  }
+
+  private readFromLocalStorage() {
+    const rawObject = localStorage.getItem("objects");
+    if (!rawObject) {
+      return;
+    }
+    this.savedIndicator.toggle(false);
+    this.objects = this.loader.readJSON(rawObject);
+    this.savedIndicator.toggle(true);
+  }
+
   private animate(n: number) {
     let i = 0;
     let intervalID = setInterval(() => {
@@ -249,5 +276,14 @@ export class Application {
         window.clearInterval(intervalID);
       }
     }, 10);
+  }
+
+  private timer: number | undefined;
+
+  private debounce(func: () => void, timeout = 300) {
+    return () => {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(func, timeout);
+    };
   }
 }
