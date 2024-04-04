@@ -109,11 +109,6 @@ export class Line extends Drawable {
       this.program.a.color.buffer
     );
 
-    console.table({
-      color: this.color,
-      colorProcessed: this.getColorProcessed(),
-    });
-
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array(this.getColorProcessed()),

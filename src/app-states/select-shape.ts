@@ -17,7 +17,6 @@ export class SelectShapeState extends BaseAppState {
   constructor(app: Application, private selectIdx: number) {
     super(app);
     this.selectObj = this.app.objects[this.selectIdx];
-    this.app.colorPicker.setColor(this.selectObj.color);
     this.updateSlider();
 
     this.rotationSlider.onValueChange((value) => {
@@ -36,7 +35,23 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onColorPickerChange(color: Color) {
-    this.selectObj.color = color;
+    if (!this.selectObj) {
+      return;
+    }
+
+    console.log(this.selectObj);
+    console.log(this.selectObj.selectedVertex);
+    console.log(this.selectObj.selectedVertexIdx);
+
+    if (this.selectObj && !this.selectObj.selectedVertex) {
+      this.selectObj.colorPoint(color);
+    } else if (
+      this.selectObj &&
+      this.selectObj.selectedVertex &&
+      this.selectObj.selectedVertexIdx
+    ) {
+      this.selectObj.colorPoint(color, this.selectObj.selectedVertexIdx);
+    }
     this.app.draw();
   }
 
@@ -88,6 +103,7 @@ export class SelectShapeState extends BaseAppState {
     this.isMoved = false;
     if (selected) {
       this.selectObj.selectVertex(selected, index);
+      this.app.colorPicker.setColor(this.selectObj.color[index]);
       this.app.toolbars.setEnableChange(false);
     }
   }

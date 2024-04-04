@@ -122,6 +122,17 @@ export abstract class Drawable {
     });
   }
 
+  colorPoint(color: Color, index?: number) {
+    if (!index) {
+      this.color = this.color.map(
+        () => JSON.parse(JSON.stringify(color)) as Color
+      );
+    } else {
+      this.color[index] = color;
+    }
+    this.updateColorCache();
+  }
+
   drawPoints(pointsSource = this.getPoints()) {
     const rotationPoint = this.getRotationPoint();
     const points: Array<number> = [];
@@ -137,9 +148,25 @@ export abstract class Drawable {
       pointSize: [10],
     });
 
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.position.buffer
+    );
+
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array(points),
+      this.program.gl.STATIC_DRAW
+    );
+
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.color.buffer
+    );
+
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(this.getColorCache()),
       this.program.gl.STATIC_DRAW
     );
 
@@ -149,9 +176,25 @@ export abstract class Drawable {
       pointSize: [4],
     });
 
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.position.buffer
+    );
+
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array(points),
+      this.program.gl.STATIC_DRAW
+    );
+
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.color.buffer
+    );
+
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(this.getColorCache()),
       this.program.gl.STATIC_DRAW
     );
 

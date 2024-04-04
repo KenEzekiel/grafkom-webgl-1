@@ -3,7 +3,7 @@ import { Line } from "../lib/drawable/line";
 import { Polygon } from "../lib/drawable/polygon";
 import { Rectangle } from "../lib/drawable/rectangle";
 import { Square } from "../lib/drawable/square";
-import { Point } from "../lib/primitives";
+import { Color, Point } from "../lib/primitives";
 import { BaseAppState } from "./base";
 import { DrawingState } from "./drawing";
 import { SelectShapeState } from "./select-shape";
@@ -46,6 +46,12 @@ export class IdleState extends BaseAppState {
 
     switch (this.app.toolbars.activeToolbar) {
       case "line":
+        const color = this.app.colorPicker.getColor();
+        const colorInverse: Color = [
+          255 - color[0],
+          255 - color[1],
+          255 - color[2],
+        ];
         const { x, y } = point;
         this.app.changeState(
           new DrawingState(
@@ -55,10 +61,7 @@ export class IdleState extends BaseAppState {
                 { x, y },
                 { x, y },
               ],
-              [
-                this.app.colorPicker.getColor(),
-                this.app.colorPicker.randomRGBA(),
-              ],
+              [color, colorInverse],
               this.app.program
             )
           )
