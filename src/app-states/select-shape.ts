@@ -70,6 +70,7 @@ export class SelectShapeState extends BaseAppState {
     } else {
       this.selectObj.doneTranslateVertex();
       this.selectObj.deselectVertex();
+      this.app.toolbars.setEnableChange(true);
       this.app.draw();
     }
     this.isMoved = false;
@@ -84,6 +85,7 @@ export class SelectShapeState extends BaseAppState {
     this.isMoved = false;
     if (selected) {
       this.selectObj.selectVertex(selected, index);
+      this.app.toolbars.setEnableChange(false);
     }
   }
 
