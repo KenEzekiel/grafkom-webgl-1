@@ -26,6 +26,22 @@ export class IdleState extends BaseAppState {
       this.app.removeObjectAt(index);
       this.app.draw();
       return;
+    } else if (this.app.toolbars.activeToolbar === "fill") {
+      const { selected } = this.app.getFirstSelected(point);
+      if (!selected) {
+        return;
+      }
+      const color = this.app.colorPicker.getColor();
+      selected.color = color;
+      this.app.draw();
+      return;
+    } else if (this.app.toolbars.activeToolbar === "color-picker") {
+      const { selected } = this.app.getFirstSelected(point);
+      if (!selected) {
+        return;
+      }
+      this.app.colorPicker.setColor(selected.color);
+      return;
     }
 
     switch (this.app.toolbars.activeToolbar) {

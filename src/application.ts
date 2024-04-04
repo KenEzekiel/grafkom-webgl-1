@@ -19,8 +19,17 @@ export class Application {
   public program;
   public objects: Array<Drawable> = [];
   public toolbars = new Toolbars(
-    ["line", "square", "rectangle", "polygon", "select-shape", "erase"],
-    ["l", "s", "r", "p", "v", "d"]
+    [
+      "line",
+      "square",
+      "rectangle",
+      "polygon",
+      "select-shape",
+      "erase",
+      "fill",
+      "color-picker",
+    ],
+    ["l", "s", "r", "p", "v", "d", "f", "c"]
   );
   public colorPicker = new ColorPicker("color-picker");
   private fileInput = new FileInput("model-input");
