@@ -26,6 +26,7 @@ export class Application {
   private fileInput = new FileInput("model-input");
 
   private state: BaseAppState;
+  private loader: Loader = new Loader();
 
   constructor(public canvas: HTMLCanvasElement) {
     const gl = canvas.getContext("webgl");
@@ -81,15 +82,21 @@ export class Application {
       .addEventListener("click", () => this.downloadImage(this.canvas));
 
     // Accepting model files
-    this.fileInput.onFileInput((files) => {
+    this.fileInput.onFileInput(async (files) => {
       const modelFile = files.item(0);
+      if (!modelFile) {
+        return;
+      }
+      const result = await this.loader.readJSON(modelFile, this.program);
+      this.objects = result;
+      this.draw();
     });
 
     // Downloading model files
     document
       .querySelector("#download-button")!
       .addEventListener("click", (e) => {
-        new Loader().saveJSON(this.objects, "model");
+        this.loader.saveJSON(this.objects, "model");
       });
 
     document.querySelector("#animate-button")!.addEventListener("click", () => {

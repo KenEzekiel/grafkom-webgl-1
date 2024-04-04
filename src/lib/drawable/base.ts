@@ -64,6 +64,10 @@ export abstract class Drawable {
     };
   }
 
+  setIsDrawing(newIsDrawing: boolean) {
+    this.isDrawing = newIsDrawing;
+  }
+
   getRotation() {
     return this.rotation;
   }

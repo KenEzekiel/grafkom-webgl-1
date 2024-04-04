@@ -1,5 +1,11 @@
 import { Drawable } from "./drawable/base";
 import FileSaver from "file-saver";
+import { Program } from "./program";
+import { ApplicationProgram } from "../application";
+import { Line } from "./drawable/line";
+import { Square } from "./drawable/square";
+import { Rectangle } from "./drawable/rectangle";
+import { Polygon } from "./drawable/polygon";
 
 export class Loader {
   getJSON(drawables: Array<Drawable>) {
@@ -13,25 +19,48 @@ export class Loader {
     FileSaver.saveAs(file);
   }
 
-  readJSON(file: File) {
-    if (file) {
-      const reader = new FileReader();
+  readJSON(file: File, program: ApplicationProgram) {
+    const reader = new FileReader();
+
+    return new Promise<Drawable[]>((resolve) => {
       reader.onload = function (e) {
         const contents = e.target!.result as string;
         // Assuming the file content is JSON
+
         const parsedDrawables: Drawable[] = JSON.parse(contents).map(
-          createDrawableFromJson
+          (drawableJSON: any) => createDrawableFromJson(drawableJSON, program)
         );
-        return parsedDrawables;
+
+        resolve(parsedDrawables);
       };
       reader.readAsText(file);
-    }
+    });
   }
 }
 
-function createDrawableFromJson(json: any) {
+function createDrawableFromJson(json: any, program: ApplicationProgram) {
   switch (json.type) {
     case "line":
-      return null;
+      const line = new Line(json.points, json.color, program);
+      line.finishDrawing();
+      return line;
+    case "square":
+      const square = new Square(json.point, json.length, json.color, program);
+      square.finishDrawing();
+      return square;
+    case "rectangle":
+      const rectangle = new Rectangle(
+        json.point,
+        json.width,
+        json.height,
+        json.color,
+        program
+      );
+      rectangle.finishDrawing();
+      return rectangle;
+    case "polygon":
+      const polygon = new Polygon(json.points, json.color, program);
+      polygon.finishDrawing();
+      return polygon;
   }
 }
