@@ -1,7 +1,7 @@
 import type { ApplicationProgram } from "../../application";
 import { Color, Point, Size, Vec2, rotatePoint } from "../primitives";
 export abstract class Drawable {
-  protected rotation: Vec2 = [0, 1];
+  public rotation: Vec2 = [0, 1];
   public rotationDegree: number = 0;
   public localRotatedDegree: number = 0;
   public selectedVertex: Point | undefined;
