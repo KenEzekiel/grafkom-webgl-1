@@ -67,7 +67,6 @@ export class SelectShapeState extends BaseAppState {
         this.app.changeState(new IdleState(this.app));
         return;
       }
-      console.log(this.isMoved, selected, this.selectObj);
       if (!this.isMoved && selected && this.selectObj !== selected) {
         this.app.changeState(new SelectShapeState(this.app, index));
       }
