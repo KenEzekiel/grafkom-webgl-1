@@ -18,4 +18,8 @@ export class FileInput {
       callback(this.fileInput.files);
     });
   }
+
+  clear() {
+    this.fileInput.value = "";
+  }
 }

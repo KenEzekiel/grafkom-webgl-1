@@ -92,6 +92,7 @@ export class Application {
 
     // Accepting model files
     this.fileInput.onFileInput(async (files) => {
+      console.log("Accepting file");
       const modelFile = files.item(0);
       if (!modelFile) {
         return;
@@ -99,6 +100,7 @@ export class Application {
       const result = await this.loader.readJSON(modelFile, this.program);
       this.objects = result;
       this.draw();
+      this.fileInput.clear();
     });
 
     // Downloading model files

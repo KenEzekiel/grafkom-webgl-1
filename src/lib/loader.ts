@@ -42,11 +42,17 @@ function createDrawableFromJson(json: any, program: ApplicationProgram) {
   switch (json.type) {
     case "line":
       const line = new Line(json.points, json.color, program);
+      line.rotationDegree = json.rotationDegree;
+      line.localRotatedDegree = json.localRotatedDegree;
+      line.rotation = json.rotation;
       line.finishDrawing();
       return line;
     case "square":
       const square = new Square(json.point, json.length, json.color, program);
       square.finishDrawing();
+      square.rotationDegree = json.rotationDegree;
+      square.localRotatedDegree = json.localRotatedDegree;
+      square.rotation = json.rotation;
       return square;
     case "rectangle":
       const rectangle = new Rectangle(
@@ -56,10 +62,16 @@ function createDrawableFromJson(json: any, program: ApplicationProgram) {
         json.color,
         program
       );
+      rectangle.rotationDegree = json.rotationDegree;
+      rectangle.localRotatedDegree = json.localRotatedDegree;
+      rectangle.rotation = json.rotation;
       rectangle.finishDrawing();
       return rectangle;
     case "polygon":
       const polygon = new Polygon(json.points, json.color, program);
+      polygon.rotationDegree = json.rotationDegree;
+      polygon.localRotatedDegree = json.localRotatedDegree;
+      polygon.rotation = json.rotation;
       polygon.finishDrawing();
       return polygon;
   }
