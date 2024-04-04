@@ -13,7 +13,7 @@ export class Rectangle extends Drawable {
     public point: Point,
     public width: number,
     public height: number,
-    color: Color,
+    color: Color[],
     application: ApplicationProgram
   ) {
     super(color, application);
@@ -22,7 +22,6 @@ export class Rectangle extends Drawable {
 
   // 0 for left top, 1 for right top, 2 for left bottom, 3 for right bottom
   // public selectedVertexIdx = -1;
-
   _getPoints(): Point[] {
     const points = [
       { ...this.point },
@@ -63,6 +62,7 @@ export class Rectangle extends Drawable {
   }
 
   draw(): void {
+    console.log("Drawing");
     if (this.tempRect) {
       return this.tempRect.draw();
     }
@@ -71,12 +71,45 @@ export class Rectangle extends Drawable {
       new Float32Array(this.calculateRectangle()),
       this.program.gl.STATIC_DRAW
     );
+
+    this.program.gl.bindBuffer(this.program.gl.ARRAY_BUFFER, null);
+
+    console.log(this.getColorCache());
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(this.getColorProcessed()),
+      this.program.gl.STATIC_DRAW
+    );
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }
 
   isSelected(mousePosition: Point): boolean {
     return isPointInsideVertexes(mousePosition, this.getPoints());
+  }
+
+  getColorProcessed() {
+    const flattenedColor = this.getColorCache();
+    return [
+      flattenedColor[0],
+      flattenedColor[1],
+      flattenedColor[2],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[6],
+      flattenedColor[7],
+      flattenedColor[8],
+    ];
   }
 
   calculateRectangle() {

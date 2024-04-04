@@ -32,7 +32,7 @@ export class IdleState extends BaseAppState {
         return;
       }
       const color = this.app.colorPicker.getColor();
-      selected.color = color;
+      // selected.color = color;
       this.app.draw();
       return;
     } else if (this.app.toolbars.activeToolbar === "color-picker") {
@@ -40,7 +40,7 @@ export class IdleState extends BaseAppState {
       if (!selected) {
         return;
       }
-      this.app.colorPicker.setColor(selected.color);
+      // this.app.colorPicker.setColor(selected.color);
       return;
     }
 
@@ -55,7 +55,10 @@ export class IdleState extends BaseAppState {
                 { x, y },
                 { x, y },
               ],
-              this.app.colorPicker.getColor(),
+              [
+                this.app.colorPicker.getColor(),
+                this.app.colorPicker.randomRGBA(),
+              ],
               this.app.program
             )
           )
@@ -82,7 +85,7 @@ export class IdleState extends BaseAppState {
               point,
               0,
               0,
-              this.app.colorPicker.getColor(),
+              Array.from([1, 2, 3, 4], () => this.app.colorPicker.getColor()),
               this.app.program
             )
           )

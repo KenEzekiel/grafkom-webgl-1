@@ -7,7 +7,7 @@ export class Line extends Drawable {
   public length: number;
   constructor(
     public points: [Point, Point],
-    color: Color,
+    color: Color[],
     program: ApplicationProgram
   ) {
     super(color, program);
@@ -89,6 +89,10 @@ export class Line extends Drawable {
   }
 
   draw(): void {
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.position.buffer
+    );
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array([
@@ -99,8 +103,29 @@ export class Line extends Drawable {
       ]),
       this.program.gl.STATIC_DRAW
     );
+
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.color.buffer
+    );
+
+    console.table({
+      color: this.color,
+      colorProcessed: this.getColorProcessed(),
+    });
+
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(this.getColorProcessed()),
+      this.program.gl.STATIC_DRAW
+    );
+
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.LINES, 0, 2);
+  }
+
+  getColorProcessed() {
+    return this.getColorCache();
   }
 
   translateVertex(translation: Point, beforeLoc: Point): void {

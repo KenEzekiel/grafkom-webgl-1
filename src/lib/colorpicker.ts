@@ -49,4 +49,11 @@ export class ColorPicker {
   public getColor(): Color {
     return JSON.parse(JSON.stringify(this.hexToRgb()));
   }
+
+  randomRGBA(): Color {
+    const o = Math.round,
+      r = Math.random,
+      s = 255;
+    return [o(r() * s), o(r() * s), o(r() * s)];
+  }
 }

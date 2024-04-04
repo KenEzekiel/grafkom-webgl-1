@@ -10,8 +10,9 @@ export abstract class Drawable {
 
   public scale: number = 1;
   protected pointsCache: Point[] | undefined;
+  protected flattenedColorCache: number[] | undefined;
 
-  constructor(public color: Color, protected program: ApplicationProgram) {}
+  constructor(public color: Color[], protected program: ApplicationProgram) {}
   abstract draw(): void;
 
   abstract getRotationPoint(): Point;
@@ -29,6 +30,17 @@ export abstract class Drawable {
   protected abstract _getPoints(): Point[];
 
   abstract translateVertex(translation: Point, beforeLoc: Point): void;
+
+  getColorCache() {
+    if (!this.flattenedColorCache) {
+      this.updateColorCache();
+    }
+    return this.flattenedColorCache!;
+  }
+
+  updateColorCache() {
+    this.flattenedColorCache = this.color.flat().map((color) => color / 255);
+  }
 
   doneTranslateVertex() {}
 
@@ -104,7 +116,6 @@ export abstract class Drawable {
   prepare(color = this.color) {
     const rotationPoint = this.getRotationPoint();
     this.program.setUniforms({
-      color: [...color.map((num) => num / 255), 1],
       rotationPoint: [rotationPoint.x, rotationPoint.y],
       rotation: this.rotation,
       scale: [this.scale],
@@ -120,7 +131,6 @@ export abstract class Drawable {
     }
 
     this.program.setUniforms({
-      color: [1, 1, 0.5, 1],
       rotation: this.rotation,
       rotationPoint: [rotationPoint.x, rotationPoint.y],
       scale: [1],
@@ -136,7 +146,6 @@ export abstract class Drawable {
     this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
 
     this.program.setUniforms({
-      color: [0, 0, 0, 1],
       pointSize: [4],
     });
 

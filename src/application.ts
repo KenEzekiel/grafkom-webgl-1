@@ -53,14 +53,14 @@ export class Application {
         position: {
           size: 2,
         },
+        color: {
+          size: 3,
+        },
       },
       uniforms: {
         resolution: {
           type: "uniform2f",
           args: [gl.canvas.width, gl.canvas.height],
-        },
-        color: {
-          type: "uniform4f",
         },
         rotationPoint: {
           type: "uniform2f",
@@ -168,7 +168,6 @@ export class Application {
   public draw() {
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.program.a.position.buffer);
     this.objects.forEach((obj) => {
       obj.draw();
     });
