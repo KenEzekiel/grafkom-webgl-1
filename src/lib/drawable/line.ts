@@ -65,14 +65,6 @@ export class Line extends Drawable {
         (distanceToPoint0 ** 2 + distanceToPoint1 ** 2 - this.length ** 2) /
         (2 * this.length * distanceToPoint1);
 
-      console.table({
-        distanceToPoint0,
-        distanceToPoint1,
-        length: this.length,
-        cosAtPoint0,
-        cosAtPoint1,
-      });
-
       // The mouse is located outside the infinitely long rectangular shape perpendicular to the line
       if (
         !(cosAtPoint0 < 0 || cosAtPoint1 < 0) ||
@@ -92,14 +84,6 @@ export class Line extends Drawable {
 
     const distance =
       Math.abs(dx * dyo - dy * dxo) / Math.sqrt(dx ** 2 + dy ** 2);
-
-    console.table({
-      dx,
-      dy,
-      dxo,
-      dyo,
-      distance,
-    });
 
     return distance <= this.proximityThickness;
   }
