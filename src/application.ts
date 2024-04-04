@@ -92,6 +92,10 @@ export class Application {
         new Loader().saveJSON(this.objects, "model");
       });
 
+    document.querySelector("#animate-button")!.addEventListener("click", () => {
+      this.animate(100);
+    });
+
     document.addEventListener("keydown", (e) => {
       this.state.onKeyDown(e);
     });
@@ -210,5 +214,21 @@ export class Application {
       let file = new File([blob], "exportedImage.jpg", { type: "image/jpeg" });
       saveAs(file);
     }, "image/jpeg");
+  }
+
+  private animate(n: number) {
+    let i = 0;
+    let intervalID = setInterval(() => {
+      console.log("Animation");
+      let rand = Math.random();
+      let neg = i % 2 == 0 ? -1 : 1;
+      this.objects.forEach((object) => {
+        object.translate({ x: 10 * rand * neg, y: 10 * neg });
+        this.draw();
+      });
+      if (++i === n) {
+        window.clearInterval(intervalID);
+      }
+    }, 10);
   }
 }
