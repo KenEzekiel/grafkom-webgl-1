@@ -69,23 +69,12 @@ export class Polygon extends Drawable {
     this.updateConvexHull();
   }
 
-  changePoint(point: Point, toPoint: Point) {
-    const idx = this.points.findIndex((p) => p === point);
-    if (idx === -1) {
-      return;
-    }
-    point.x = toPoint.x;
-    point.y = toPoint.y;
-    this.updateConvexHull();
-  }
-
   translate(translation: Point): void {
     for (let i = 0; i < this.points.length; i++) {
       translatePoint(this.points[i], translation);
     }
 
     this.resetPointsCache();
-
     this.updateLocalPoints();
   }
 
@@ -111,7 +100,9 @@ export class Polygon extends Drawable {
       temp.push({ ...point, color: this.color[index] });
     });
     if (this.points.length > 3) {
-      const {} = convexHull(temp, temp.length);
+      const { points, colors } = convexHull(temp, temp.length);
+      this.points = points;
+      this.color = colors;
     }
     this.updateLocalPoints();
   }
@@ -366,7 +357,13 @@ function convexHull(
     while (i < n - 1 && getOrientation(p0, points[i], points[i + 1]) == 0)
       i += 1;
 
-    points[m] = points[i];
+    points[m].x = points[i].x;
+    points[m].y = points[i].y;
+    points[m].color = [
+      points[i].color[0],
+      points[i].color[1],
+      points[i].color[2],
+    ];
     m += 1; // Update size of modified array
   }
 
@@ -375,7 +372,6 @@ function convexHull(
 
   // Create an empty stack and push first three points to it.
   let S = [];
-  let SColor = [];
   S.push(points[0]);
   S.push(points[1]);
   S.push(points[2]);
