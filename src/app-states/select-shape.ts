@@ -39,24 +39,21 @@ export class SelectShapeState extends BaseAppState {
       return;
     }
 
-    console.log(this.selectObj);
-    console.log(this.selectObj.selectedVertex);
-    console.log(this.selectObj.selectedVertexIdx);
+    console.table({
+      selectedVertex: this.selectObj.selectedVertex,
+      selectedVertexIdx: this.selectObj.selectedVertexIdx,
+    });
 
     if (this.selectObj && !this.selectObj.selectedVertex) {
       this.selectObj.colorPoint(color);
-    } else if (
-      this.selectObj &&
-      this.selectObj.selectedVertex &&
-      this.selectObj.selectedVertexIdx
-    ) {
+    } else if (this.selectObj && this.selectObj.selectedVertex) {
       this.selectObj.colorPoint(color, this.selectObj.selectedVertexIdx);
     }
     this.app.draw();
   }
 
   onMouseMove(point: Point): void {
-    if (this.selectObj.selectedVertex) {
+    if (this.selectObj.draggedVertex) {
       const translation = {
         x: point.x - this.selectedMouseLoc.x,
         y: point.y - this.selectedMouseLoc.y,
@@ -76,7 +73,7 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onMouseUp(point: Point) {
-    if (!this.selectObj.selectedVertex) {
+    if (!this.selectObj.draggedVertex) {
       const { selected, index } = this.app.getFirstSelected(point);
       if (!selected) {
         this.app.changeState(new IdleState(this.app));
@@ -87,7 +84,7 @@ export class SelectShapeState extends BaseAppState {
       }
     } else {
       this.selectObj.doneTranslateVertex();
-      this.selectObj.deselectVertex();
+      this.selectObj.releaseDraggedVertex();
       this.app.toolbars.setEnableChange(true);
       this.app.draw();
     }
@@ -97,12 +94,18 @@ export class SelectShapeState extends BaseAppState {
 
   onMouseDown(point: Point) {
     const { selected, index } = this.selectObj.getSelectedPoint(point);
+    const deselectedVertex =
+      this.selectObj.selectedVertexIdx !== 1 &&
+      this.selectObj.selectedVertexIdx === index;
+    if (deselectedVertex) {
+      this.selectObj.deselectVertex();
+    }
     this.beforeSelectedLoc = { ...point };
     this.selectedMouseLoc = { ...point };
     this.isMouseDown = true;
     this.isMoved = false;
-    if (selected) {
-      this.selectObj.selectVertex(selected, index);
+    if (!deselectedVertex && selected) {
+      this.selectObj.dragVertex(selected, index);
       this.app.colorPicker.setColor(this.selectObj.color[index]);
       this.app.toolbars.setEnableChange(false);
     }

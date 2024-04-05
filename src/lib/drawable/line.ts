@@ -45,7 +45,7 @@ export class Line extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    // This code block prevents line distance calculation being done as if the line extends infinitely long by calculating the angles of the triangle made by the line's point 0, the line's point 1, and the position of the mouse
+    // This code block prevents line distance calculation being ftra as if the line extends infinitely long by calculating the angles of the triangle made by the line's point 0, the line's point 1, and the position of the mouse
     {
       const distanceToPoint0 = Math.sqrt(
         (mousePosition.x - this.points[0].x) ** 2 +
@@ -124,11 +124,11 @@ export class Line extends Drawable {
   }
 
   translateVertex(translation: Point, beforeLoc: Point): void {
-    if (this.selectedVertexIdx === -1) {
+    if (this.draggedVertexIdx === -1) {
       return;
     }
-    this.points[this.selectedVertexIdx].x = beforeLoc.x + translation.x;
-    this.points[this.selectedVertexIdx].y = beforeLoc.y + translation.y;
+    this.points[this.draggedVertexIdx].x = beforeLoc.x + translation.x;
+    this.points[this.draggedVertexIdx].y = beforeLoc.y + translation.y;
     this.resetPointsCache();
     this.calculateLength();
   }

@@ -6,6 +6,9 @@ export abstract class Drawable {
   public localRotatedDegree: number = 0;
   public selectedVertex: Point | undefined;
   public selectedVertexIdx = -1;
+  public draggedVertex: Point | undefined;
+  public draggedVertexIdx = -1;
+
   public isDrawing = true;
 
   public scale: number = 1;
@@ -123,12 +126,14 @@ export abstract class Drawable {
   }
 
   colorPoint(color: Color, index?: number) {
-    if (!index) {
+    if (index === undefined) {
       this.color = this.color.map(
         () => JSON.parse(JSON.stringify(color)) as Color
       );
     } else {
+      console.log("Before", this.color);
       this.color[index] = color;
+      console.log("After", this.color);
     }
     this.updateColorCache();
   }
@@ -226,6 +231,17 @@ export abstract class Drawable {
   deselectVertex() {
     this.selectedVertex = undefined;
     this.selectedVertexIdx = -1;
+  }
+
+  dragVertex(vertex: Point, idx: number) {
+    this.selectVertex(vertex, idx);
+    this.draggedVertex = vertex;
+    this.draggedVertexIdx = idx;
+  }
+
+  releaseDraggedVertex() {
+    this.draggedVertex = undefined;
+    this.draggedVertexIdx = -1;
   }
 
   finishDrawing() {

@@ -198,11 +198,11 @@ export class Polygon extends Drawable {
   }
 
   translateVertex(translation: Point, beforeLoc: Point): void {
-    if (!this.selectedVertex) {
+    if (!this.draggedVertex) {
       return;
     }
-    this.selectedVertex.x = beforeLoc.x + translation.x;
-    this.selectedVertex.y = beforeLoc.y + translation.y;
+    this.draggedVertex.x = beforeLoc.x + translation.x;
+    this.draggedVertex.y = beforeLoc.y + translation.y;
     this.updateLocalPoints();
   }
 

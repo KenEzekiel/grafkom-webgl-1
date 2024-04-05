@@ -131,7 +131,7 @@ export class Rectangle extends Drawable {
   }
 
   translateVertex(translation: Point, _beforeLoc: Point) {
-    if (this.selectedVertexIdx === -1) {
+    if (this.draggedVertexIdx === -1) {
       return;
     }
 
@@ -139,7 +139,7 @@ export class Rectangle extends Drawable {
     let width = this.width;
     let height = this.height;
 
-    switch (this.selectedVertexIdx) {
+    switch (this.draggedVertexIdx) {
       case 0:
         point.x = this.point.x + translation.x;
         point.y = this.point.y + translation.y;
