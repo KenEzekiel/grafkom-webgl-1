@@ -11,7 +11,7 @@ export class Polygon extends Drawable {
 
   constructor(
     public points: Array<Point>,
-    color: Color,
+    color: Color[],
     application: ApplicationProgram
   ) {
     super(color, application);
@@ -171,7 +171,7 @@ export class Polygon extends Drawable {
     }
   }
 
-  drawOutline(color = this.color) {
+  drawOutline(color = this.color[0]) {
     const lines: number[] = [];
     for (let i = 0; i < this.points.length; i++) {
       lines.push(this.points[i].x, this.points[i].y);
@@ -185,7 +185,7 @@ export class Polygon extends Drawable {
       new Float32Array(lines),
       this.program.gl.STATIC_DRAW
     );
-    this.prepare(color);
+    this.prepare();
     this.program.gl.drawArrays(
       this.program.gl.LINES,
       0,

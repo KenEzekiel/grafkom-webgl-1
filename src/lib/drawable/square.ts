@@ -14,7 +14,7 @@ export class Square extends Drawable {
   constructor(
     public point: Point,
     public length: number,
-    color: Color,
+    color: Color[],
     application: ApplicationProgram
   ) {
     super(color, application);
