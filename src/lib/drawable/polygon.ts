@@ -106,11 +106,13 @@ export class Polygon extends Drawable {
   }
 
   updateConvexHull() {
-    let temp: Point[] = [];
-    this.points.forEach((point) => {
-      temp.push(point);
+    let temp: (Point & { color: Color })[] = [];
+    this.points.forEach((point, index) => {
+      temp.push({ ...point, color: this.color[index] });
     });
-    if (this.points.length > 3) this.points = convexHull(temp, temp.length);
+    if (this.points.length > 3) {
+      const {} = convexHull(temp, temp.length);
+    }
     this.updateLocalPoints();
   }
 
@@ -199,7 +201,7 @@ export class Polygon extends Drawable {
         this.points[(i + 1) % this.points.length].x,
         this.points[(i + 1) % this.points.length].y
       );
-      colors.push(color[0], color[1], color[2]);
+      colors.push(color[0], color[1], color[2], color[0], color[1], color[2]);
     }
 
     this.bufferPositionAndColor(lines, color);
@@ -323,7 +325,10 @@ function compare(p1: Point, p2: Point): number {
  * @param n
  * @returns Points array
  */
-function convexHull(points: Point[], n: number): Point[] {
+function convexHull(
+  points: (Point & { color: Color })[],
+  n: number
+): { points: Point[]; colors: Color[] } {
   // Find the bottommost point
   let ymin = points[0].y;
   let min = 0;
@@ -366,10 +371,11 @@ function convexHull(points: Point[], n: number): Point[] {
   }
 
   // If modified array of points has less than 3 points, convex hull is not possible
-  if (m < 3) return [];
+  if (m < 3) return { points: [], colors: [] };
 
   // Create an empty stack and push first three points to it.
   let S = [];
+  let SColor = [];
   S.push(points[0]);
   S.push(points[1]);
   S.push(points[2]);
@@ -391,11 +397,13 @@ function convexHull(points: Point[], n: number): Point[] {
   // Now stack has the output points,
   // print contents of stack
   let ret: Point[] = [];
+  let colors: Color[] = [];
   while (S.length > 0) {
-    let p = S[S.length - 1];
-    ret.push(S.pop()!);
+    const s = S.pop()!;
+    ret.push({ x: s.x, y: s.y });
+    colors.push([s.color[0], s.color[1], s.color[2]]);
   }
-  return ret;
+  return { points: ret, colors };
 }
 
 //let a = {x: 607, y: 92};
