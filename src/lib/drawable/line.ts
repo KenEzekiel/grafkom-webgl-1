@@ -102,15 +102,8 @@ export class Line extends Drawable {
   }
 
   draw(): void {
-    this.program.bindBufferStaticDraw(this.program.a.position.buffer, [
-      this.points[0].x,
-      this.points[0].y,
-      this.points[1].x,
-      this.points[1].y,
-    ]);
-
-    this.program.bindBufferStaticDraw(
-      this.program.a.color.buffer,
+    this.bufferPositionAndColor(
+      [this.points[0].x, this.points[0].y, this.points[1].x, this.points[1].y],
       this.getColorProcessed()
     );
 

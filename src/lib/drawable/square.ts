@@ -40,8 +40,7 @@ export class Square extends Drawable {
     if (this.tempSquare) {
       return this.tempSquare.getPoints();
     }
-    const points = super.getPoints();
-    return [points[0]];
+    return super.getPoints();
   }
 
   initializeVertexColor(): void {
@@ -102,13 +101,8 @@ export class Square extends Drawable {
       return;
     }
 
-    this.program.bindBufferStaticDraw(
-      this.program.a.position.buffer,
-      this.calculateSquare()
-    );
-
-    this.program.bindBufferStaticDraw(
-      this.program.a.color.buffer,
+    this.bufferPositionAndColor(
+      this.calculateSquare(),
       this.getColorProcessed()
     );
 
@@ -155,6 +149,14 @@ export class Square extends Drawable {
     this.length = this.tempSquare.length;
     this.tempSquare = undefined;
     this.resetPointsCache();
+  }
+
+  dragVertex(vertex: Point, idx: number): void {
+    if (idx !== 0) {
+      return;
+    }
+
+    super.dragVertex(vertex, idx);
   }
 
   moveDrawing(point: Point): void {

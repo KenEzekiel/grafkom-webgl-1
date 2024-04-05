@@ -67,13 +67,8 @@ export class Rectangle extends Drawable {
       return this.tempRect.draw();
     }
 
-    this.program.bindBufferStaticDraw(
-      this.program.a.position.buffer,
-      this.calculateRectangle()
-    );
-
-    this.program.bindBufferStaticDraw(
-      this.program.a.color.buffer,
+    this.bufferPositionAndColor(
+      this.calculateRectangle(),
       this.getColorProcessed()
     );
 

@@ -164,12 +164,7 @@ export abstract class Drawable {
       pointSize: [10],
     });
 
-    this.program.bindBufferStaticDraw(this.program.a.position.buffer, points);
-
-    this.program.bindBufferStaticDraw(
-      this.program.a.color.buffer,
-      this.vertexesColorOuter
-    );
+    this.bufferPositionAndColor(points, this.vertexesColorOuter);
 
     this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
 
@@ -177,12 +172,7 @@ export abstract class Drawable {
       pointSize: [4],
     });
 
-    this.program.bindBufferStaticDraw(this.program.a.position.buffer, points);
-
-    this.program.bindBufferStaticDraw(
-      this.program.a.color.buffer,
-      this.vertexesColorInner
-    );
+    this.bufferPositionAndColor(points, this.vertexesColorInner);
 
     this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
   }
@@ -227,5 +217,14 @@ export abstract class Drawable {
 
   finishDrawing() {
     this.isDrawing = false;
+  }
+
+  bufferPositionAndColor(bufferPosition: number[], bufferColor: number[]) {
+    this.program.bindBufferStaticDraw(
+      this.program.a.position.buffer,
+      bufferPosition
+    );
+
+    this.program.bindBufferStaticDraw(this.program.a.color.buffer, bufferColor);
   }
 }

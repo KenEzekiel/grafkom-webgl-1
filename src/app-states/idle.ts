@@ -72,7 +72,7 @@ export class IdleState extends BaseAppState {
             new Square(
               point,
               0,
-              [this.app.colorPicker.getColor()],
+              [1, 2, 3, 4].map(() => this.app.colorPicker.getColor()),
               this.app.program
             )
           )

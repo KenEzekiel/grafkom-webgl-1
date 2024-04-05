@@ -158,15 +158,7 @@ export class Polygon extends Drawable {
     } else if (this.points.length === 2) {
       this.asLine().draw();
     } else {
-      this.program.bindBufferStaticDraw(
-        this.program.a.position.buffer,
-        this.localPoints
-      );
-
-      this.program.bindBufferStaticDraw(
-        this.program.a.color.buffer,
-        this.getColorProcessed()
-      );
+      this.bufferPositionAndColor(this.localPoints, this.getColorProcessed());
 
       this.prepare();
       this.program.gl.drawArrays(
@@ -200,15 +192,17 @@ export class Polygon extends Drawable {
 
   drawOutline(color = this.color[0]) {
     const lines: number[] = [];
+    const colors: number[] = [];
     for (let i = 0; i < this.points.length; i++) {
       lines.push(this.points[i].x, this.points[i].y);
       lines.push(
         this.points[(i + 1) % this.points.length].x,
         this.points[(i + 1) % this.points.length].y
       );
+      colors.push(color[0], color[1], color[2]);
     }
 
-    this.program.bindBufferStaticDraw(this.program.a.position.buffer, lines);
+    this.bufferPositionAndColor(lines, color);
 
     this.prepare();
     this.program.gl.drawArrays(
