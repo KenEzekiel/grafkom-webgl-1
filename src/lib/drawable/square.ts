@@ -18,6 +18,7 @@ export class Square extends Drawable {
     application: ApplicationProgram
   ) {
     super(color, application);
+    this.initializeVertexColor();
   }
   public tempSquare: Square | undefined = undefined;
 
@@ -41,6 +42,18 @@ export class Square extends Drawable {
     }
     const points = super.getPoints();
     return [points[0]];
+  }
+
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = [1, 2, 3, 4]
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorOuter = [1, 2, 3, 4]
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
   }
 
   isSelected(mousePosition: Point): boolean {

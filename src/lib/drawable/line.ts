@@ -14,6 +14,7 @@ export class Line extends Drawable {
     this.length = Math.sqrt(
       (points[0].x - points[1].x) ** 2 + (points[0].y - points[1].y) ** 2
     );
+    this.initializeVertexColor();
   }
 
   public proximityThickness = 5;
@@ -34,6 +35,18 @@ export class Line extends Drawable {
       (this.points[0].x - this.points[1].x) ** 2 +
         (this.points[0].y - this.points[1].y) ** 2
     );
+  }
+
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = this.points
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorInner = this.points
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
   }
 
   translate({ x, y }: Point): void {

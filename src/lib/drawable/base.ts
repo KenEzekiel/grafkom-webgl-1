@@ -8,6 +8,13 @@ export abstract class Drawable {
   public selectedVertexIdx = -1;
   public draggedVertex: Point | undefined;
   public draggedVertexIdx = -1;
+  // Set color for the vertex hitbox
+  protected readonly vertexColorYellow = [255, 215, 68];
+  protected readonly vertexColorBlack = [0, 0, 0];
+
+  // The actual color used by the vertex
+  protected vertexesColorOuter = [...this.vertexColorYellow];
+  protected vertexesColorInner = [...this.vertexColorBlack];
 
   public isDrawing = true;
 
@@ -33,6 +40,8 @@ export abstract class Drawable {
   protected abstract _getPoints(): Point[];
 
   abstract translateVertex(translation: Point, beforeLoc: Point): void;
+
+  abstract initializeVertexColor(): void;
 
   getColorCache() {
     if (!this.flattenedColorCache) {
@@ -131,9 +140,7 @@ export abstract class Drawable {
         () => JSON.parse(JSON.stringify(color)) as Color
       );
     } else {
-      console.log("Before", this.color);
       this.color[index] = color;
-      console.log("After", this.color);
     }
     this.updateColorCache();
   }
@@ -171,7 +178,7 @@ export abstract class Drawable {
 
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.getColorCache()),
+      new Float32Array(this.vertexesColorOuter),
       this.program.gl.STATIC_DRAW
     );
 
@@ -199,7 +206,7 @@ export abstract class Drawable {
 
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.getColorCache()),
+      new Float32Array(this.vertexesColorInner),
       this.program.gl.STATIC_DRAW
     );
 

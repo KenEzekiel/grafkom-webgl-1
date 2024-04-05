@@ -17,6 +17,7 @@ export class Rectangle extends Drawable {
     application: ApplicationProgram
   ) {
     super(color, application);
+    this.initializeVertexColor();
   }
   public tempRect: Rectangle | undefined = undefined;
 
@@ -128,6 +129,18 @@ export class Rectangle extends Drawable {
       points[2].x,
       points[2].y,
     ];
+  }
+
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = [1, 2, 3, 4]
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorOuter = [1, 2, 3, 4]
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
   }
 
   translateVertex(translation: Point, _beforeLoc: Point) {

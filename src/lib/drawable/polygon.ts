@@ -16,6 +16,7 @@ export class Polygon extends Drawable {
   ) {
     super(color, application);
     this.updateLocalPoints();
+    this.initializeVertexColor();
   }
   getRotationPoint(): Point {
     return this.points[0];
@@ -169,6 +170,18 @@ export class Polygon extends Drawable {
     if (this.nextPoint) {
       this.drawPoints([this.nextPoint]);
     }
+  }
+
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = this.points
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorOuter = this.points
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
   }
 
   drawOutline(color = this.color[0]) {
