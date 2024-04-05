@@ -117,7 +117,7 @@ export class Application {
       });
 
     document.querySelector("#animate-button")!.addEventListener("click", () => {
-      this.animate(100);
+      this.clearObjects();
     });
 
     document.addEventListener("keydown", (e) => {
@@ -262,22 +262,6 @@ export class Application {
     this.savedIndicator.toggle(true);
   }
 
-  private animate(n: number) {
-    let i = 0;
-    let intervalID = setInterval(() => {
-      console.log("Animation");
-      let rand = Math.random();
-      let neg = i % 2 == 0 ? -1 : 1;
-      this.objects.forEach((object) => {
-        object.translate({ x: 10 * rand * neg, y: 10 * neg });
-        this.draw();
-      });
-      if (++i === n) {
-        window.clearInterval(intervalID);
-      }
-    }, 10);
-  }
-
   private timer: number | undefined;
 
   private debounce(func: () => void, timeout = 300) {
@@ -285,5 +269,21 @@ export class Application {
       clearTimeout(this.timer);
       this.timer = setTimeout(func, timeout);
     };
+  }
+
+  private async clearObjects() {
+    while (this.objects.length > 0) {
+      let deg = 1;
+      let intervalID = setInterval(() => {
+        this.objects[0].setRotation(deg);
+        this.draw();
+        if (deg++ === 180) {
+          window.clearInterval(intervalID);
+        }
+      }, 5);
+      await new Promise((f) => setTimeout(f, 1000));
+      this.objects.shift();
+      this.draw();
+    }
   }
 }
