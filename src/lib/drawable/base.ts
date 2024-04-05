@@ -43,6 +43,10 @@ export abstract class Drawable {
 
   abstract initializeVertexColor(): void;
 
+  getColorProcessed() {
+    return this.getColorCache();
+  }
+
   getColorCache() {
     if (!this.flattenedColorCache) {
       this.updateColorCache();
@@ -160,26 +164,11 @@ export abstract class Drawable {
       pointSize: [10],
     });
 
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.position.buffer
-    );
+    this.program.bindBufferStaticDraw(this.program.a.position.buffer, points);
 
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(points),
-      this.program.gl.STATIC_DRAW
-    );
-
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.color.buffer
-    );
-
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.vertexesColorOuter),
-      this.program.gl.STATIC_DRAW
+    this.program.bindBufferStaticDraw(
+      this.program.a.color.buffer,
+      this.vertexesColorOuter
     );
 
     this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);
@@ -188,26 +177,11 @@ export abstract class Drawable {
       pointSize: [4],
     });
 
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.position.buffer
-    );
+    this.program.bindBufferStaticDraw(this.program.a.position.buffer, points);
 
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(points),
-      this.program.gl.STATIC_DRAW
-    );
-
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.color.buffer
-    );
-
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.vertexesColorInner),
-      this.program.gl.STATIC_DRAW
+    this.program.bindBufferStaticDraw(
+      this.program.a.color.buffer,
+      this.vertexesColorInner
     );
 
     this.program.gl.drawArrays(this.program.gl.POINTS, 0, points.length / 2);

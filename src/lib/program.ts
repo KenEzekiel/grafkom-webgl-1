@@ -162,4 +162,16 @@ export class Program<
       (this.gl[uniform.type] as any)(uniform.location, ...args);
     });
   }
+  bindBufferStaticDraw(targetBuffer: WebGLBuffer | null, bufferData: number[]) {
+    if (!targetBuffer) {
+      return;
+    }
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, targetBuffer);
+
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(bufferData),
+      this.gl.STATIC_DRAW
+    );
+  }
 }

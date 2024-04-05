@@ -102,26 +102,14 @@ export class Square extends Drawable {
       return;
     }
 
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.position.buffer
+    this.program.bindBufferStaticDraw(
+      this.program.a.position.buffer,
+      this.calculateSquare()
     );
 
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.calculateSquare()),
-      this.program.gl.STATIC_DRAW
-    );
-
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.color.buffer
-    );
-
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.getColorProcessed()),
-      this.program.gl.STATIC_DRAW
+    this.program.bindBufferStaticDraw(
+      this.program.a.color.buffer,
+      this.getColorProcessed()
     );
 
     this.prepare();

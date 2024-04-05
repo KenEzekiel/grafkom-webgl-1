@@ -65,6 +65,7 @@ export class Polygon extends Drawable {
     }
 
     this.points.splice(index, 1);
+    this.color.splice(index, 1);
     this.updateConvexHull();
   }
 
@@ -88,8 +89,14 @@ export class Polygon extends Drawable {
     this.updateLocalPoints();
   }
 
+  getLastColor() {
+    return this.color[this.color.length - 1];
+  }
+
   addPoint(point: Point) {
     this.points.push(point);
+    const lastColor = this.getLastColor();
+    this.color.push([lastColor[0], lastColor[1], lastColor[2]]);
     this.updateLocalPoints();
   }
 
@@ -119,6 +126,7 @@ export class Polygon extends Drawable {
     this.points.forEach((point) => {
       this.localPoints.push(point.x, point.y);
     });
+    this.updateColorCache();
     this.resetPointsCache();
   }
 
@@ -150,20 +158,26 @@ export class Polygon extends Drawable {
     } else if (this.points.length === 2) {
       this.asLine().draw();
     } else {
-      this.program.gl.bufferData(
-        this.program.gl.ARRAY_BUFFER,
-        new Float32Array(this.localPoints),
-        this.program.gl.STATIC_DRAW
+      this.program.bindBufferStaticDraw(
+        this.program.a.position.buffer,
+        this.localPoints
       );
+
+      this.program.bindBufferStaticDraw(
+        this.program.a.color.buffer,
+        this.getColorProcessed()
+      );
+
       this.prepare();
       this.program.gl.drawArrays(
         this.program.gl.TRIANGLE_FAN,
         0,
         this.points.length
       );
+
       if (this.isDrawing) {
         this.program.gl.lineWidth(5);
-        this.drawOutline([4, 240, 0]);
+        this.drawOutline([62, 208, 17]);
       }
     }
 
@@ -193,11 +207,9 @@ export class Polygon extends Drawable {
         this.points[(i + 1) % this.points.length].y
       );
     }
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(lines),
-      this.program.gl.STATIC_DRAW
-    );
+
+    this.program.bindBufferStaticDraw(this.program.a.position.buffer, lines);
+
     this.prepare();
     this.program.gl.drawArrays(
       this.program.gl.LINES,

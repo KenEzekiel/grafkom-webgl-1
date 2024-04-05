@@ -63,32 +63,20 @@ export class Rectangle extends Drawable {
   }
 
   draw(): void {
-    console.log("Drawing");
     if (this.tempRect) {
       return this.tempRect.draw();
     }
 
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.position.buffer
+    this.program.bindBufferStaticDraw(
+      this.program.a.position.buffer,
+      this.calculateRectangle()
     );
 
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.calculateRectangle()),
-      this.program.gl.STATIC_DRAW
+    this.program.bindBufferStaticDraw(
+      this.program.a.color.buffer,
+      this.getColorProcessed()
     );
 
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.color.buffer
-    );
-    console.log(this.getColorCache());
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.getColorProcessed()),
-      this.program.gl.STATIC_DRAW
-    );
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }

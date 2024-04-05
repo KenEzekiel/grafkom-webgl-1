@@ -102,30 +102,16 @@ export class Line extends Drawable {
   }
 
   draw(): void {
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.position.buffer
-    );
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array([
-        this.points[0].x,
-        this.points[0].y,
-        this.points[1].x,
-        this.points[1].y,
-      ]),
-      this.program.gl.STATIC_DRAW
-    );
+    this.program.bindBufferStaticDraw(this.program.a.position.buffer, [
+      this.points[0].x,
+      this.points[0].y,
+      this.points[1].x,
+      this.points[1].y,
+    ]);
 
-    this.program.gl.bindBuffer(
-      this.program.gl.ARRAY_BUFFER,
-      this.program.a.color.buffer
-    );
-
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.getColorProcessed()),
-      this.program.gl.STATIC_DRAW
+    this.program.bindBufferStaticDraw(
+      this.program.a.color.buffer,
+      this.getColorProcessed()
     );
 
     this.prepare();
