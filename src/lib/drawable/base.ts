@@ -43,6 +43,24 @@ export abstract class Drawable {
 
   abstract initializeVertexColor(): void;
 
+  getAverageColor(): Color {
+    let sumFirst = 0;
+    let sumTwo = 0;
+    let sumThree = 0;
+
+    for (let i = 0; i < this.color.length; i++) {
+      sumFirst += this.color[i][0];
+      sumTwo += this.color[i][1];
+      sumThree += this.color[i][2];
+    }
+
+    const denominator = this.color.length;
+
+    return [sumFirst, sumTwo, sumThree].map((sum) =>
+      Math.round(sum / denominator)
+    ) as Color;
+  }
+
   getColorProcessed() {
     return this.getColorCache();
   }

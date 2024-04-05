@@ -32,7 +32,7 @@ export class IdleState extends BaseAppState {
         return;
       }
       const color = this.app.colorPicker.getColor();
-      // selected.color = color;
+      selected.colorPoint(color);
       this.app.draw();
       return;
     } else if (this.app.toolbars.activeToolbar === "color-picker") {
@@ -40,7 +40,8 @@ export class IdleState extends BaseAppState {
       if (!selected) {
         return;
       }
-      // this.app.colorPicker.setColor(selected.color);
+      const averageColor = selected.getAverageColor();
+      this.app.colorPicker.setColor(averageColor);
       return;
     }
 
