@@ -103,17 +103,11 @@ export class SelectShapeState extends BaseAppState {
 
   onMouseDown(point: Point) {
     const { selected, index } = this.selectObj.getSelectedPoint(point);
-    const reclickedOnSelectedVertex =
-      this.selectObj.selectedVertexIdx !== -1 &&
-      this.selectObj.selectedVertexIdx === index;
-    if (reclickedOnSelectedVertex || index === -1) {
-      this.selectObj.deselectVertex();
-    }
     this.beforeSelectedLoc = { ...point };
     this.selectedMouseLoc = { ...point };
     this.isMouseDown = true;
     this.isMoved = false;
-    if (!reclickedOnSelectedVertex && selected) {
+    if (selected) {
       this.selectObj.dragVertex(selected, index);
       this.app.colorPicker.setColor(this.selectObj.color[index]);
       this.app.toolbars.setEnableChange(false);
