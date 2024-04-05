@@ -7,13 +7,14 @@ export class Line extends Drawable {
   public length: number;
   constructor(
     public points: [Point, Point],
-    color: Color,
+    color: Color[],
     program: ApplicationProgram
   ) {
     super(color, program);
     this.length = Math.sqrt(
       (points[0].x - points[1].x) ** 2 + (points[0].y - points[1].y) ** 2
     );
+    this.initializeVertexColor();
   }
 
   public proximityThickness = 5;
@@ -36,6 +37,18 @@ export class Line extends Drawable {
     );
   }
 
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = this.points
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorInner = this.points
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
+  }
+
   translate({ x, y }: Point): void {
     this.points[0].x += x;
     this.points[0].y += y;
@@ -45,7 +58,7 @@ export class Line extends Drawable {
   }
 
   isSelected(mousePosition: Point): boolean {
-    // This code block prevents line distance calculation being done as if the line extends infinitely long by calculating the angles of the triangle made by the line's point 0, the line's point 1, and the position of the mouse
+    // This code block prevents line distance calculation being ftra as if the line extends infinitely long by calculating the angles of the triangle made by the line's point 0, the line's point 1, and the position of the mouse
     {
       const distanceToPoint0 = Math.sqrt(
         (mousePosition.x - this.points[0].x) ** 2 +
@@ -89,26 +102,25 @@ export class Line extends Drawable {
   }
 
   draw(): void {
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array([
-        this.points[0].x,
-        this.points[0].y,
-        this.points[1].x,
-        this.points[1].y,
-      ]),
-      this.program.gl.STATIC_DRAW
+    this.bufferPositionAndColor(
+      [this.points[0].x, this.points[0].y, this.points[1].x, this.points[1].y],
+      this.getColorProcessed()
     );
+
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.LINES, 0, 2);
   }
 
+  getColorProcessed() {
+    return this.getColorCache();
+  }
+
   translateVertex(translation: Point, beforeLoc: Point): void {
-    if (this.selectedVertexIdx === -1) {
+    if (this.draggedVertexIdx === -1) {
       return;
     }
-    this.points[this.selectedVertexIdx].x = beforeLoc.x + translation.x;
-    this.points[this.selectedVertexIdx].y = beforeLoc.y + translation.y;
+    this.points[this.draggedVertexIdx].x = beforeLoc.x + translation.x;
+    this.points[this.draggedVertexIdx].y = beforeLoc.y + translation.y;
     this.resetPointsCache();
     this.calculateLength();
   }

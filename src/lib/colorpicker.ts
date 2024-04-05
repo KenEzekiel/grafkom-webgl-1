@@ -24,7 +24,7 @@ export class ColorPicker {
   }
 
   private componentToHex(c: number) {
-    var hex = c.toString(16);
+    const hex = c.toString(16);
     return hex.length == 1 ? "0" + hex : hex;
   }
 
@@ -48,5 +48,12 @@ export class ColorPicker {
 
   public getColor(): Color {
     return JSON.parse(JSON.stringify(this.hexToRgb()));
+  }
+
+  randomRGBA(): Color {
+    const o = Math.round,
+      r = Math.random,
+      s = 255;
+    return [o(r() * s), o(r() * s), o(r() * s)];
   }
 }

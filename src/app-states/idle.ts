@@ -3,7 +3,7 @@ import { Line } from "../lib/drawable/line";
 import { Polygon } from "../lib/drawable/polygon";
 import { Rectangle } from "../lib/drawable/rectangle";
 import { Square } from "../lib/drawable/square";
-import { Point } from "../lib/primitives";
+import { Color, Point } from "../lib/primitives";
 import { BaseAppState } from "./base";
 import { DrawingState } from "./drawing";
 import { SelectShapeState } from "./select-shape";
@@ -32,7 +32,7 @@ export class IdleState extends BaseAppState {
         return;
       }
       const color = this.app.colorPicker.getColor();
-      selected.color = color;
+      // selected.color = color;
       this.app.draw();
       return;
     } else if (this.app.toolbars.activeToolbar === "color-picker") {
@@ -40,12 +40,13 @@ export class IdleState extends BaseAppState {
       if (!selected) {
         return;
       }
-      this.app.colorPicker.setColor(selected.color);
+      // this.app.colorPicker.setColor(selected.color);
       return;
     }
 
     switch (this.app.toolbars.activeToolbar) {
       case "line":
+        const color = this.app.colorPicker.getColor();
         const { x, y } = point;
         this.app.changeState(
           new DrawingState(
@@ -55,7 +56,10 @@ export class IdleState extends BaseAppState {
                 { x, y },
                 { x, y },
               ],
-              this.app.colorPicker.getColor(),
+              [
+                this.app.colorPicker.getColor(),
+                this.app.colorPicker.getColor(),
+              ],
               this.app.program
             )
           )
@@ -68,7 +72,7 @@ export class IdleState extends BaseAppState {
             new Square(
               point,
               0,
-              this.app.colorPicker.getColor(),
+              [1, 2, 3, 4].map(() => this.app.colorPicker.getColor()),
               this.app.program
             )
           )
@@ -82,7 +86,7 @@ export class IdleState extends BaseAppState {
               point,
               0,
               0,
-              this.app.colorPicker.getColor(),
+              Array.from([1, 2, 3, 4], () => this.app.colorPicker.getColor()),
               this.app.program
             )
           )
@@ -94,7 +98,10 @@ export class IdleState extends BaseAppState {
             this.app,
             new Polygon(
               [{ ...point }, { ...point }],
-              this.app.colorPicker.getColor(),
+              [
+                this.app.colorPicker.getColor(),
+                this.app.colorPicker.getColor(),
+              ],
               this.app.program
             )
           )

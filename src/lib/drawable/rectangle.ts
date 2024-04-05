@@ -13,16 +13,16 @@ export class Rectangle extends Drawable {
     public point: Point,
     public width: number,
     public height: number,
-    color: Color,
+    color: Color[],
     application: ApplicationProgram
   ) {
     super(color, application);
+    this.initializeVertexColor();
   }
   public tempRect: Rectangle | undefined = undefined;
 
   // 0 for left top, 1 for right top, 2 for left bottom, 3 for right bottom
   // public selectedVertexIdx = -1;
-
   _getPoints(): Point[] {
     const points = [
       { ...this.point },
@@ -66,17 +66,42 @@ export class Rectangle extends Drawable {
     if (this.tempRect) {
       return this.tempRect.draw();
     }
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.calculateRectangle()),
-      this.program.gl.STATIC_DRAW
+
+    this.bufferPositionAndColor(
+      this.calculateRectangle(),
+      this.getColorProcessed()
     );
+
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }
 
   isSelected(mousePosition: Point): boolean {
     return isPointInsideVertexes(mousePosition, this.getPoints());
+  }
+
+  getColorProcessed() {
+    const flattenedColor = this.getColorCache();
+    return [
+      flattenedColor[0],
+      flattenedColor[1],
+      flattenedColor[2],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[6],
+      flattenedColor[7],
+      flattenedColor[8],
+    ];
   }
 
   calculateRectangle() {
@@ -97,8 +122,20 @@ export class Rectangle extends Drawable {
     ];
   }
 
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = [1, 2, 3, 4]
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorInner = [1, 2, 3, 4]
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
+  }
+
   translateVertex(translation: Point, _beforeLoc: Point) {
-    if (this.selectedVertexIdx === -1) {
+    if (this.draggedVertexIdx === -1) {
       return;
     }
 
@@ -106,7 +143,7 @@ export class Rectangle extends Drawable {
     let width = this.width;
     let height = this.height;
 
-    switch (this.selectedVertexIdx) {
+    switch (this.draggedVertexIdx) {
       case 0:
         point.x = this.point.x + translation.x;
         point.y = this.point.y + translation.y;

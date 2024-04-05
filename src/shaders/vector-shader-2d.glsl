@@ -7,6 +7,10 @@ uniform float u_scale;
 uniform vec2 u_resolution;
 uniform float u_pointSize;
 
+attribute vec3 a_color;
+
+varying vec4 v_vertex_color;
+
 // all shaders have a main function
 void main() {
   // to rotation point
@@ -27,5 +31,8 @@ void main() {
   vec2 clipSpace = zeroToTwo - 1.0;
 
   gl_PointSize = u_pointSize;
+
+  v_vertex_color = vec4(a_color, 1.0);
+
   gl_Position = vec4(clipSpace.x, -clipSpace.y, 0, 1);
 }

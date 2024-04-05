@@ -14,10 +14,11 @@ export class Square extends Drawable {
   constructor(
     public point: Point,
     public length: number,
-    color: Color,
+    color: Color[],
     application: ApplicationProgram
   ) {
     super(color, application);
+    this.initializeVertexColor();
   }
   public tempSquare: Square | undefined = undefined;
 
@@ -39,8 +40,19 @@ export class Square extends Drawable {
     if (this.tempSquare) {
       return this.tempSquare.getPoints();
     }
-    const points = super.getPoints();
-    return [points[0]];
+    return super.getPoints();
+  }
+
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = [1, 2, 3, 4]
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorInner = [1, 2, 3, 4]
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
   }
 
   isSelected(mousePosition: Point): boolean {
@@ -59,16 +71,41 @@ export class Square extends Drawable {
     this.resetPointsCache();
   }
 
+  getColorProcessed() {
+    const flattenedColor = this.getColorCache();
+    return [
+      flattenedColor[0],
+      flattenedColor[1],
+      flattenedColor[2],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[6],
+      flattenedColor[7],
+      flattenedColor[8],
+    ];
+  }
+
   draw(): void {
     if (this.tempSquare) {
       this.tempSquare.draw();
       return;
     }
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(this.calculateSquare()),
-      this.program.gl.STATIC_DRAW
+
+    this.bufferPositionAndColor(
+      this.calculateSquare(),
+      this.getColorProcessed()
     );
+
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }
@@ -101,6 +138,9 @@ export class Square extends Drawable {
 
     this.tempSquare = new Square(point, length, this.color, this.program);
     this.tempSquare.localRotatedDegree = this.localRotatedDegree;
+    this.tempSquare.selectedVertexIdx = this.selectedVertexIdx;
+    this.tempSquare.selectedVertex =
+      this.tempSquare.getPoints()[this.tempSquare.selectedVertexIdx];
   }
 
   doneTranslateVertex(): void {
@@ -112,6 +152,14 @@ export class Square extends Drawable {
     this.length = this.tempSquare.length;
     this.tempSquare = undefined;
     this.resetPointsCache();
+  }
+
+  dragVertex(vertex: Point, idx: number): void {
+    if (idx !== 0) {
+      return;
+    }
+
+    super.dragVertex(vertex, idx);
   }
 
   moveDrawing(point: Point): void {

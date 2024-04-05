@@ -73,6 +73,7 @@ export class Program<
         buffer,
         location,
       };
+      gl.bindBuffer(gl.ARRAY_BUFFER, null);
     });
 
     this.uniforms = {} as typeof this.uniforms;
@@ -113,7 +114,6 @@ export class Program<
       return program;
     }
 
-    console.log(this.gl.getProgramInfoLog(program));
     this.gl.deleteProgram(program);
     throw new Error("Invalid to share program");
   }
@@ -127,7 +127,6 @@ export class Program<
       return shader;
     }
 
-    console.log(this.gl.getShaderInfoLog(shader));
     this.gl.deleteShader(shader);
     throw new Error("Failed to create shader");
   }
@@ -145,5 +144,32 @@ export class Program<
       }
       (this.gl[uniform.type] as any)(uniform.location, ...args);
     });
+  }
+
+  public setAttributes(uniforms: {
+    [K in keyof TUniforms]?: any[];
+  }) {
+    Object.entries(uniforms).forEach(([item, args]) => {
+      if (!args) {
+        return;
+      }
+      const uniform = this.uniforms[item];
+      if (!uniform) {
+        return;
+      }
+      (this.gl[uniform.type] as any)(uniform.location, ...args);
+    });
+  }
+  bindBufferStaticDraw(targetBuffer: WebGLBuffer | null, bufferData: number[]) {
+    if (!targetBuffer) {
+      return;
+    }
+    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, targetBuffer);
+
+    this.gl.bufferData(
+      this.gl.ARRAY_BUFFER,
+      new Float32Array(bufferData),
+      this.gl.STATIC_DRAW
+    );
   }
 }

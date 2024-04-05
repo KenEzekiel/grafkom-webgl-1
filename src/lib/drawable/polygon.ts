@@ -7,15 +7,17 @@ import { Line } from "./line";
 export class Polygon extends Drawable {
   private localPoints: Array<number> = [];
   public nextPoint: Point | undefined;
+  public nextColor: Color | undefined;
   public type = "polygon";
 
   constructor(
     public points: Array<Point>,
-    color: Color,
+    color: Color[],
     application: ApplicationProgram
   ) {
     super(color, application);
     this.updateLocalPoints();
+    this.initializeVertexColor();
   }
   getRotationPoint(): Point {
     return this.points[0];
@@ -64,16 +66,7 @@ export class Polygon extends Drawable {
     }
 
     this.points.splice(index, 1);
-    this.updateConvexHull();
-  }
-
-  changePoint(point: Point, toPoint: Point) {
-    const idx = this.points.findIndex((p) => p === point);
-    if (idx === -1) {
-      return;
-    }
-    point.x = toPoint.x;
-    point.y = toPoint.y;
+    this.color.splice(index, 1);
     this.updateConvexHull();
   }
 
@@ -83,12 +76,17 @@ export class Polygon extends Drawable {
     }
 
     this.resetPointsCache();
-
     this.updateLocalPoints();
+  }
+
+  getLastColor() {
+    return this.color[this.color.length - 1];
   }
 
   addPoint(point: Point) {
     this.points.push(point);
+    const lastColor = this.getLastColor();
+    this.color.push([lastColor[0], lastColor[1], lastColor[2]]);
     this.updateLocalPoints();
   }
 
@@ -98,11 +96,15 @@ export class Polygon extends Drawable {
   }
 
   updateConvexHull() {
-    let temp: Point[] = [];
-    this.points.forEach((point) => {
-      temp.push(point);
+    let temp: (Point & { color: Color })[] = [];
+    this.points.forEach((point, index) => {
+      temp.push({ ...point, color: this.color[index] });
     });
-    if (this.points.length > 3) this.points = convexHull(temp, temp.length);
+    if (this.points.length > 3) {
+      const { points, colors } = convexHull(temp, temp.length);
+      this.points = points;
+      this.color = colors;
+    }
     this.updateLocalPoints();
   }
 
@@ -118,12 +120,14 @@ export class Polygon extends Drawable {
     this.points.forEach((point) => {
       this.localPoints.push(point.x, point.y);
     });
+    this.updateColorCache();
     this.resetPointsCache();
   }
 
   finishDrawingMove(point: Point): boolean {
     if (this.isSelected(point)) {
       this.nextPoint = undefined;
+      this.nextColor = undefined;
       return true;
     } else {
       this.addPoint(point);
@@ -140,6 +144,7 @@ export class Polygon extends Drawable {
 
   finishDrawing(): void {
     super.finishDrawing();
+    this.initializeVertexColor();
     this.updateConvexHull();
   }
 
@@ -149,20 +154,18 @@ export class Polygon extends Drawable {
     } else if (this.points.length === 2) {
       this.asLine().draw();
     } else {
-      this.program.gl.bufferData(
-        this.program.gl.ARRAY_BUFFER,
-        new Float32Array(this.localPoints),
-        this.program.gl.STATIC_DRAW
-      );
+      this.bufferPositionAndColor(this.localPoints, this.getColorProcessed());
+
       this.prepare();
       this.program.gl.drawArrays(
         this.program.gl.TRIANGLE_FAN,
         0,
         this.points.length
       );
+
       if (this.isDrawing) {
         this.program.gl.lineWidth(5);
-        this.drawOutline([4, 240, 0]);
+        this.drawOutline([62, 208, 17]);
       }
     }
 
@@ -171,21 +174,33 @@ export class Polygon extends Drawable {
     }
   }
 
-  drawOutline(color = this.color) {
+  initializeVertexColor(): void {
+    this.vertexesColorOuter = this.points
+      .map(() => this.vertexColorYellow)
+      .flat()
+      .map((color) => color / 255);
+
+    this.vertexesColorInner = this.points
+      .map(() => this.vertexColorBlack)
+      .flat()
+      .map((color) => color / 255);
+  }
+
+  drawOutline(color = this.color[0]) {
     const lines: number[] = [];
+    const colors: number[] = [];
     for (let i = 0; i < this.points.length; i++) {
       lines.push(this.points[i].x, this.points[i].y);
       lines.push(
         this.points[(i + 1) % this.points.length].x,
         this.points[(i + 1) % this.points.length].y
       );
+      colors.push(color[0], color[1], color[2], color[0], color[1], color[2]);
     }
-    this.program.gl.bufferData(
-      this.program.gl.ARRAY_BUFFER,
-      new Float32Array(lines),
-      this.program.gl.STATIC_DRAW
-    );
-    this.prepare(color);
+
+    this.bufferPositionAndColor(lines, color);
+
+    this.prepare();
     this.program.gl.drawArrays(
       this.program.gl.LINES,
       0,
@@ -198,11 +213,11 @@ export class Polygon extends Drawable {
   }
 
   translateVertex(translation: Point, beforeLoc: Point): void {
-    if (!this.selectedVertex) {
+    if (!this.draggedVertex) {
       return;
     }
-    this.selectedVertex.x = beforeLoc.x + translation.x;
-    this.selectedVertex.y = beforeLoc.y + translation.y;
+    this.draggedVertex.x = beforeLoc.x + translation.x;
+    this.draggedVertex.y = beforeLoc.y + translation.y;
     this.updateLocalPoints();
   }
 
@@ -304,7 +319,10 @@ function compare(p1: Point, p2: Point): number {
  * @param n
  * @returns Points array
  */
-function convexHull(points: Point[], n: number): Point[] {
+function convexHull(
+  points: (Point & { color: Color })[],
+  n: number
+): { points: Point[]; colors: Color[] } {
   // Find the bottommost point
   let ymin = points[0].y;
   let min = 0;
@@ -342,12 +360,18 @@ function convexHull(points: Point[], n: number): Point[] {
     while (i < n - 1 && getOrientation(p0, points[i], points[i + 1]) == 0)
       i += 1;
 
-    points[m] = points[i];
+    points[m].x = points[i].x;
+    points[m].y = points[i].y;
+    points[m].color = [
+      points[i].color[0],
+      points[i].color[1],
+      points[i].color[2],
+    ];
     m += 1; // Update size of modified array
   }
 
   // If modified array of points has less than 3 points, convex hull is not possible
-  if (m < 3) return [];
+  if (m < 3) return { points: [], colors: [] };
 
   // Create an empty stack and push first three points to it.
   let S = [];
@@ -372,11 +396,13 @@ function convexHull(points: Point[], n: number): Point[] {
   // Now stack has the output points,
   // print contents of stack
   let ret: Point[] = [];
+  let colors: Color[] = [];
   while (S.length > 0) {
-    let p = S[S.length - 1];
-    ret.push(S.pop()!);
+    const s = S.pop()!;
+    ret.push({ x: s.x, y: s.y });
+    colors.push([s.color[0], s.color[1], s.color[2]]);
   }
-  return ret;
+  return { points: ret, colors };
 }
 
 //let a = {x: 607, y: 92};

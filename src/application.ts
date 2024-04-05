@@ -53,14 +53,14 @@ export class Application {
         position: {
           size: 2,
         },
+        color: {
+          size: 3,
+        },
       },
       uniforms: {
         resolution: {
           type: "uniform2f",
           args: [gl.canvas.width, gl.canvas.height],
-        },
-        color: {
-          type: "uniform4f",
         },
         rotationPoint: {
           type: "uniform2f",
@@ -98,7 +98,6 @@ export class Application {
 
     // Accepting model files
     this.fileInput.onFileInput(async (files) => {
-      console.log("Accepting file");
       const modelFile = files.item(0);
       if (!modelFile) {
         return;
@@ -168,7 +167,6 @@ export class Application {
   public draw() {
     this.gl.clearColor(0, 0, 0, 1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.program.a.position.buffer);
     this.objects.forEach((obj) => {
       obj.draw();
     });
@@ -260,6 +258,22 @@ export class Application {
     this.savedIndicator.toggle(false);
     this.objects = this.loader.readJSON(rawObject);
     this.savedIndicator.toggle(true);
+  }
+
+
+  private animate(n: number) {
+    let i = 0;
+    let intervalID = setInterval(() => {
+      let rand = Math.random();
+      let neg = i % 2 == 0 ? -1 : 1;
+      this.objects.forEach((object) => {
+        object.translate({ x: 10 * rand * neg, y: 10 * neg });
+        this.draw();
+      });
+      if (++i === n) {
+        window.clearInterval(intervalID);
+      }
+    }, 10);
   }
 
   private timer: number | undefined;
