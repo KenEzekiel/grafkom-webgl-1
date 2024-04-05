@@ -38,10 +38,6 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onColorPickerChange(color: Color) {
-    console.table({
-      selectObj: this.selectObj,
-      selectedVertex: this.selectObj?.selectedVertexIdx,
-    });
     if (!this.selectObj) {
       return;
     }
@@ -122,10 +118,6 @@ export class SelectShapeState extends BaseAppState {
       this.app.colorPicker.setColor(this.selectObj.color[index]);
       this.app.toolbars.setEnableChange(false);
     }
-    console.table({
-      index,
-      reclickedOnSelectedVertex,
-    });
   }
 
   updateSlider() {

@@ -98,7 +98,6 @@ export class Application {
 
     // Accepting model files
     this.fileInput.onFileInput(async (files) => {
-      console.log("Accepting file");
       const modelFile = files.item(0);
       if (!modelFile) {
         return;
@@ -264,7 +263,6 @@ export class Application {
   private animate(n: number) {
     let i = 0;
     let intervalID = setInterval(() => {
-      console.log("Animation");
       let rand = Math.random();
       let neg = i % 2 == 0 ? -1 : 1;
       this.objects.forEach((object) => {

@@ -114,7 +114,6 @@ export class Program<
       return program;
     }
 
-    console.log(this.gl.getProgramInfoLog(program));
     this.gl.deleteProgram(program);
     throw new Error("Invalid to share program");
   }
@@ -128,7 +127,6 @@ export class Program<
       return shader;
     }
 
-    console.log(this.gl.getShaderInfoLog(shader));
     this.gl.deleteShader(shader);
     throw new Error("Failed to create shader");
   }
