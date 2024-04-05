@@ -14,7 +14,7 @@
     <div class="w-full h-full flex">
       <div id="app" class="flex flex-col justify-start items-center gap-4 pb-4">
         <div
-          class="p-2 toolbars grid grid-cols-[2rem_2rem] gap-2 border-b-white border-b-2"
+          class="p-2 toolbars grid grid-cols-[2rem_2rem_2rem_2rem] gap-2 border-b-white border-b-2"
         >
           <div class="tooltip tooltip-right tooltip-secondary">
             <button class="btn btn-sm btn-primary w-8 h-8 p-0 line">
@@ -100,7 +100,9 @@
             </button>
           </div>
           <div class="tooltip tooltip-right tooltip-secondary">
-            <button class="btn btn-sm btn-primary text-black w-8 h-8 p-0 color-picker">
+            <button
+              class="btn btn-sm btn-primary text-black w-8 h-8 p-0 color-picker"
+            >
               <i class="fa-solid fa-eye-dropper"></i>
             </button>
           </div>
@@ -127,8 +129,9 @@
           </div>
         </div>
         <div class="flex-grow"></div>
-        <div class="flex w-full flex-col items-center justify-start border-b-2 border-b-white pb-2">
-
+        <div
+          class="flex w-full flex-col items-center justify-start border-b-2 border-b-white pb-2"
+        >
           <button class="text-white" id="saved-indicator">
             <i class="fa-solid" id="saved-indicator-icon"></i>
           </button>

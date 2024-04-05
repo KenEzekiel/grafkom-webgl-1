@@ -101,9 +101,14 @@ export class Polygon extends Drawable {
       temp.push({ ...point, color: this.color[index] });
     });
     if (this.points.length > 3) {
-      const { points, colors } = convexHull(temp, temp.length);
+      const { points, colors, retSelectedIdx } = convexHull(
+        temp,
+        temp.length,
+        this.selectedVertexIdx
+      );
       this.points = points;
       this.color = colors;
+      this.selectedVertexIdx = retSelectedIdx ?? -1;
     }
     this.updateLocalPoints();
   }
@@ -162,11 +167,6 @@ export class Polygon extends Drawable {
         0,
         this.points.length
       );
-
-      if (this.isDrawing) {
-        this.program.gl.lineWidth(5);
-        this.drawOutline([62, 208, 17]);
-      }
     }
 
     if (this.nextPoint) {
@@ -320,9 +320,13 @@ function compare(p1: Point, p2: Point): number {
  * @returns Points array
  */
 function convexHull(
-  points: (Point & { color: Color })[],
-  n: number
-): { points: Point[]; colors: Color[] } {
+  points: (Point & { color: Color; selected?: boolean })[],
+  n: number,
+  selectedIdx?: number
+): { points: Point[]; colors: Color[]; retSelectedIdx?: number } {
+  if (selectedIdx !== undefined && selectedIdx !== -1) {
+    points[selectedIdx].selected = true;
+  }
   // Find the bottommost point
   let ymin = points[0].y;
   let min = 0;
@@ -367,6 +371,7 @@ function convexHull(
       points[i].color[1],
       points[i].color[2],
     ];
+    points[m].selected = points[i].selected;
     m += 1; // Update size of modified array
   }
 
@@ -397,12 +402,16 @@ function convexHull(
   // print contents of stack
   let ret: Point[] = [];
   let colors: Color[] = [];
+  let retSelectedIdx: number | undefined = undefined;
   while (S.length > 0) {
     const s = S.pop()!;
     ret.push({ x: s.x, y: s.y });
     colors.push([s.color[0], s.color[1], s.color[2]]);
+    if (s.selected) {
+      retSelectedIdx = ret.length - 1;
+    }
   }
-  return { points: ret, colors };
+  return { points: ret, colors, retSelectedIdx };
 }
 
 //let a = {x: 607, y: 92};
