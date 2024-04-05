@@ -7,6 +7,7 @@ import { Line } from "./line";
 export class Polygon extends Drawable {
   private localPoints: Array<number> = [];
   public nextPoint: Point | undefined;
+  public nextColor: Color | undefined;
   public type = "polygon";
 
   constructor(
@@ -126,6 +127,7 @@ export class Polygon extends Drawable {
   finishDrawingMove(point: Point): boolean {
     if (this.isSelected(point)) {
       this.nextPoint = undefined;
+      this.nextColor = undefined;
       return true;
     } else {
       this.addPoint(point);
@@ -142,6 +144,7 @@ export class Polygon extends Drawable {
 
   finishDrawing(): void {
     super.finishDrawing();
+    this.initializeVertexColor();
     this.updateConvexHull();
   }
 
