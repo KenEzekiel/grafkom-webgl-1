@@ -16,6 +16,7 @@ export class SelectShapeState extends BaseAppState {
 
   constructor(app: Application, private selectIdx: number) {
     super(app);
+
     this.selectObj = this.app.objects[this.selectIdx];
     this.updateSlider();
 
@@ -28,6 +29,8 @@ export class SelectShapeState extends BaseAppState {
   onBeforeChange(): void {
     this.app.manageSliderVisibility(false);
     this.rotationSlider.cleanup();
+    this.selectObj.releaseDraggedVertex();
+    this.selectObj.deselectVertex();
   }
 
   onAfterChange(): void {
@@ -38,11 +41,6 @@ export class SelectShapeState extends BaseAppState {
     if (!this.selectObj) {
       return;
     }
-
-    console.table({
-      selectedVertex: this.selectObj.selectedVertex,
-      selectedVertexIdx: this.selectObj.selectedVertexIdx,
-    });
 
     if (this.selectObj && !this.selectObj.selectedVertex) {
       this.selectObj.colorPoint(color);
@@ -94,17 +92,17 @@ export class SelectShapeState extends BaseAppState {
 
   onMouseDown(point: Point) {
     const { selected, index } = this.selectObj.getSelectedPoint(point);
-    const deselectedVertex =
-      this.selectObj.selectedVertexIdx !== 1 &&
+    const reclickedOnSelectedVertex =
+      this.selectObj.selectedVertexIdx !== -1 &&
       this.selectObj.selectedVertexIdx === index;
-    if (deselectedVertex) {
+    if (reclickedOnSelectedVertex || index === -1) {
       this.selectObj.deselectVertex();
     }
     this.beforeSelectedLoc = { ...point };
     this.selectedMouseLoc = { ...point };
     this.isMouseDown = true;
     this.isMoved = false;
-    if (!deselectedVertex && selected) {
+    if (!reclickedOnSelectedVertex && selected) {
       this.selectObj.dragVertex(selected, index);
       this.app.colorPicker.setColor(this.selectObj.color[index]);
       this.app.toolbars.setEnableChange(false);
