@@ -38,6 +38,10 @@ export class SelectShapeState extends BaseAppState {
   }
 
   onColorPickerChange(color: Color) {
+    console.table({
+      selectObj: this.selectObj,
+      selectedVertex: this.selectObj?.selectedVertexIdx,
+    });
     if (!this.selectObj) {
       return;
     }
@@ -72,13 +76,24 @@ export class SelectShapeState extends BaseAppState {
 
   onMouseUp(point: Point) {
     if (!this.selectObj.draggedVertex) {
-      const { selected, index } = this.app.getFirstSelected(point);
-      if (!selected) {
-        this.app.changeState(new IdleState(this.app));
-        return;
-      }
-      if (!this.isMoved && selected && this.selectObj !== selected) {
-        this.app.changeState(new SelectShapeState(this.app, index));
+      const { index: indexVertex, selected: selectedVertex } =
+        this.selectObj.getSelectedPoint(point);
+      if (indexVertex !== -1 && selectedVertex) {
+        this.selectObj.selectVertex(selectedVertex, indexVertex);
+      } else {
+        const { selected: selectedObject, index: indexObject } =
+          this.app.getFirstSelected(point);
+        if (!selectedObject) {
+          this.app.changeState(new IdleState(this.app));
+          return;
+        }
+        if (
+          !this.isMoved &&
+          selectedObject &&
+          this.selectObj !== selectedObject
+        ) {
+          this.app.changeState(new SelectShapeState(this.app, indexObject));
+        }
       }
     } else {
       this.selectObj.doneTranslateVertex();
@@ -107,6 +122,10 @@ export class SelectShapeState extends BaseAppState {
       this.app.colorPicker.setColor(this.selectObj.color[index]);
       this.app.toolbars.setEnableChange(false);
     }
+    console.table({
+      index,
+      reclickedOnSelectedVertex,
+    });
   }
 
   updateSlider() {

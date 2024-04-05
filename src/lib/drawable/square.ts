@@ -138,6 +138,9 @@ export class Square extends Drawable {
 
     this.tempSquare = new Square(point, length, this.color, this.program);
     this.tempSquare.localRotatedDegree = this.localRotatedDegree;
+    this.tempSquare.selectedVertexIdx = this.selectedVertexIdx;
+    this.tempSquare.selectedVertex =
+      this.tempSquare.getPoints()[this.tempSquare.selectedVertexIdx];
   }
 
   doneTranslateVertex(): void {
