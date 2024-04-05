@@ -50,7 +50,7 @@ export class Square extends Drawable {
       .flat()
       .map((color) => color / 255);
 
-    this.vertexesColorOuter = [1, 2, 3, 4]
+    this.vertexesColorInner = [1, 2, 3, 4]
       .map(() => this.vertexColorBlack)
       .flat()
       .map((color) => color / 255);
@@ -72,16 +72,58 @@ export class Square extends Drawable {
     this.resetPointsCache();
   }
 
+  getColorProcessed() {
+    const flattenedColor = this.getColorCache();
+    return [
+      flattenedColor[0],
+      flattenedColor[1],
+      flattenedColor[2],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[9],
+      flattenedColor[10],
+      flattenedColor[11],
+      flattenedColor[3],
+      flattenedColor[4],
+      flattenedColor[5],
+      flattenedColor[6],
+      flattenedColor[7],
+      flattenedColor[8],
+    ];
+  }
+
   draw(): void {
     if (this.tempSquare) {
       this.tempSquare.draw();
       return;
     }
+
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.position.buffer
+    );
+
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array(this.calculateSquare()),
       this.program.gl.STATIC_DRAW
     );
+
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.color.buffer
+    );
+
+    this.program.gl.bufferData(
+      this.program.gl.ARRAY_BUFFER,
+      new Float32Array(this.getColorProcessed()),
+      this.program.gl.STATIC_DRAW
+    );
+
     this.prepare();
     this.program.gl.drawArrays(this.program.gl.TRIANGLES, 0, 6);
   }

@@ -67,14 +67,22 @@ export class Rectangle extends Drawable {
     if (this.tempRect) {
       return this.tempRect.draw();
     }
+
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.position.buffer
+    );
+
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
       new Float32Array(this.calculateRectangle()),
       this.program.gl.STATIC_DRAW
     );
 
-    this.program.gl.bindBuffer(this.program.gl.ARRAY_BUFFER, null);
-
+    this.program.gl.bindBuffer(
+      this.program.gl.ARRAY_BUFFER,
+      this.program.a.color.buffer
+    );
     console.log(this.getColorCache());
     this.program.gl.bufferData(
       this.program.gl.ARRAY_BUFFER,
@@ -137,7 +145,7 @@ export class Rectangle extends Drawable {
       .flat()
       .map((color) => color / 255);
 
-    this.vertexesColorOuter = [1, 2, 3, 4]
+    this.vertexesColorInner = [1, 2, 3, 4]
       .map(() => this.vertexColorBlack)
       .flat()
       .map((color) => color / 255);

@@ -178,7 +178,7 @@ export class Polygon extends Drawable {
       .flat()
       .map((color) => color / 255);
 
-    this.vertexesColorOuter = this.points
+    this.vertexesColorInner = this.points
       .map(() => this.vertexColorBlack)
       .flat()
       .map((color) => color / 255);
